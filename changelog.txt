@@ -1,0 +1,47 @@
+= Pendiente
+ * Mantener conexión activa 2016/01/21
+  
+= v0020e =
+@ 13/10/2016
+ * Se agrega JSON como tipo de formulario, cambio en webDesap.v037e_ha
+
+@ 13/10/2016
+ * Se modifica
+ 
+= v0020d =
+@ 11/01/2016
+ * Se evita posibilidad de duplicados en pFormObjeto en update de TFormObjectMigraDAO
+
+= v0020c =
+@ 19/10/2015
+ * Se modifica tabla tFormObjeto en la base local, el campo pFormObjeto se
+   hace auto incrementable.
+ * No se copia el pFormObjeto desde la base remota.
+
+= v0020b =
+@ 26/09/2015
+ * Se agrega nuevo tipo de formulario: Beanshell
+ * Se agrega tTpFormObjeto: BSH y JAVA
+ 
+= v0020a =
+@ 19/09/2015 - A.GALAZ
+ * Se pasa TTpFormObjeto al proyecto principal, y se toma desde utilCnv.jar
+ 
+= v0020 =
+@ 28/08/2015 - A.GALAZ
+ * Sincronización mejorada de archivos:
+   - Permite hacer Override de commit y update
+   - Puede crear formularios en forma automática
+   - Se mejora la interacción con el usuario
+
+= v0013 =
+@ 13/08/2015 - A.GALAZ
+ * Se envío de última línea en blanco
+
+= v0012 =
+@ 01/08/2015 - A.GALAZ
+ * Se corrige la grabación de archivos vacíos
+
+= v0011 =
+@ 17/04/2015 - A.GALAZ
+ * Primera versión beta

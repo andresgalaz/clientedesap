@@ -88,11 +88,11 @@ public class WatchDir implements Runnable {
         this.keys = new HashMap<WatchKey, Path>();
         this.migraFrm = migraFrm;
 
-        // Recursivo recursive
-        // registerAll( dir );
-        // No Recursivo
         logger.info( "Buscando " + dir );
-        register( dir );
+        // Recursivo recursive
+        registerAll( dir );
+        // No Recursivo
+        // register( dir );
         logger.info( "Terminada la busqueda" );
 
         // enable trace after initial registration
@@ -126,9 +126,8 @@ public class WatchDir implements Runnable {
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                     throws IOException
             {
-                // if (dir.equals(
-                // WatchDir.this.migraFrm.getHsql().getDatabaseDir() ))
-                // return FileVisitResult.SKIP_SUBTREE;
+                if (dir.equals( WatchDir.this.migraFrm.getHsql().getDatabaseDir() ))
+                    return FileVisitResult.SKIP_SUBTREE;
                 register( dir );
                 return FileVisitResult.CONTINUE;
             }

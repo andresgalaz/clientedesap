@@ -8,8 +8,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +17,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
+import prg.glz.cli.config.Parametro;
 import prg.glz.cli.db.ControlHSQL;
 import prg.glz.cli.frm.DlgOpSync;
 import prg.glz.cli.ws.MigraFrwk;
@@ -155,7 +156,7 @@ public class Sincroniza {
 			FileOutputStream fo = null;
 			try {
 				fo = new FileOutputStream(fLocal);
-				fo.write(formRemoto.getcFuente().getBytes("UTF-8"));
+				fo.write(formRemoto.getcFuente());
 				fo.flush();
 			} catch (Exception e) {
 				throw new FrameworkException("No se pudo bajar el archivo al disco:" + cLocal, e);
@@ -211,7 +212,8 @@ public class Sincroniza {
 //		if (!TTpFormObjeto.isExtensionValida(ext))
 //			return;
 
-		String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		String cIdForm = getRutaRelativa( fLocal.getPath() );
 		TFormObjetoMigra formRemoto = migraMgr.getFormByCIdForm(cIdForm);
 		TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm(cIdForm);
 		dialogo.setRespuesta(DlgOpSync.DLG_COMMIT);
@@ -271,7 +273,7 @@ public class Sincroniza {
 				FileOutputStream fo = null;
 				try {
 					fo = new FileOutputStream(fLocal);
-					fo.write(formRemoto.getcFuente().getBytes("UTF-8"));
+					fo.write(formRemoto.getcFuente());
 					fo.flush();
 				} catch (Exception e) {
 					throw new FrameworkException("No se pudo bajar el archivo al disco:" + fLocal.getName(), e);
@@ -378,7 +380,7 @@ public class Sincroniza {
 			// Actualiza archivo local
 			if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
 				fo = new FileOutputStream(fLocal);
-				fo.write(formRemoto.getcFuente().getBytes("UTF-8"));
+				fo.write(formRemoto.getcFuente());
 				fo.flush();
 				formObjetoLocalDao.deleteByCIdForm(formRemoto.getcIdForm());
 				frmLocal = formRemoto.clone();
@@ -417,7 +419,7 @@ public class Sincroniza {
 			this.formObjetoLocalDao.deleteByCIdForm(formRemoto.getcIdForm());
 
 			fo = new FileOutputStream(fLocal);
-			fo.write(formRemoto.getcFuente().getBytes("UTF-8"));
+			fo.write(formRemoto.getcFuente());
 			fo.flush();
 			formObjetoLocalDao.deleteByCIdForm(formRemoto.getcIdForm());
 			TFormObjetoMigra formLocal = formRemoto.clone();
@@ -437,7 +439,7 @@ public class Sincroniza {
 	}
 
 	private boolean isEqualCFuente(File fLocal, TFormObjetoMigra frmRemoto) {
-		String cFuenteLocal;
+		byte[] cFuenteLocal;
 		FileInputStream fi = null;
 		try {
 			fi = new FileInputStream(fLocal);
@@ -450,7 +452,7 @@ public class Sincroniza {
 					n += l;
 				}
 				fi.close();
-				cFuenteLocal = new String(sb, "UTF-8");
+				cFuenteLocal = sb;
 			}
 		} catch (FileNotFoundException e) {
 			return false;
@@ -463,7 +465,7 @@ public class Sincroniza {
 			} catch (Exception e2) {
 			}
 		}
-		return cFuenteLocal.compareTo(frmRemoto.getcFuente()) == 0;
+		return Arrays.equals( cFuenteLocal, frmRemoto.getcFuente());
 	}
 
 	private boolean eliminaRemoto(TFormObjetoMigra formRemoto) throws SQLException, FrameworkException {
@@ -563,7 +565,9 @@ public class Sincroniza {
 		FilenameFilter filtro = new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				String ext = ConvertFile.extension(name);
+			    if( name.equalsIgnoreCase( ControlHSQL.DBName ))
+			        return false;
+				// String ext = ConvertFile.extension(name);
 				return true; // TTpFormObjeto.isExtensionValida( ext );
 			}
 		};
@@ -689,5 +693,14 @@ public class Sincroniza {
 
 	public ControlHSQL getHsql() {
 		return hsql;
+	}
+	
+	public String getRutaRelativa(String cArchivo ){
+	    if(ConvertString.isEmpty( cArchivo ) || cArchivo.indexOf( '/' ) < 0 )
+	        return cArchivo;
+	    
+	    if( Parametro.getDir().regionMatches( 0, cArchivo, 0, Parametro.getDir().length() ))
+	        return cArchivo.substring( Parametro.getDir().length() + 1 );
+        return cArchivo;
 	}
 }

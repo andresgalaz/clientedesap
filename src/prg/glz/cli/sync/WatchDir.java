@@ -103,6 +103,7 @@ public class WatchDir implements Runnable {
      * Register the given directory with the WatchService
      */
     private void register(Path dir) throws IOException {
+        logger.debug( "register Path="+dir.toString() );
         WatchKey key = dir.register( watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY );
         if (trace) {
             Path prev = keys.get( key );
@@ -126,7 +127,7 @@ public class WatchDir implements Runnable {
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                     throws IOException
             {
-                if (dir.equals( WatchDir.this.migraFrm.getHsql().getDatabaseDir() ))
+                if (dir.toString().equals( WatchDir.this.migraFrm.getHsql().getDatabaseDir() ))
                     return FileVisitResult.SKIP_SUBTREE;
                 register( dir );
                 return FileVisitResult.CONTINUE;

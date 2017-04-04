@@ -9,7 +9,8 @@ import org.apache.log4j.Logger;
 
 public class ControlHSQL {
     private static Logger       logger = Logger.getLogger( ControlHSQL.class );
-    private static final String DBH    = "jdbc:hsqldb:file:";
+    public  static final String DBH    = "jdbc:hsqldb:file:";
+    public  static final String DBName = ".frmwkDb";
     private Connection          con    = null;
     private String              DBHDir;
 
@@ -19,7 +20,7 @@ public class ControlHSQL {
         } catch (Exception e) {
             throw new SQLException( "Falló al cargar Drivers de HSQLDB JDBC", e );
         }
-        this.DBHDir = cDir + ".frmwkDb";
+        this.DBHDir = cDir + DBName;
         String cNombreDB = DBH + DBHDir + "/xformgen";
         try {
             con = DriverManager.getConnection( cNombreDB );

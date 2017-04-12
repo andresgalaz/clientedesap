@@ -304,7 +304,7 @@ public class Sincroniza {
 //		if (!TTpFormObjeto.isExtensionValida(ext))
 //			return true;
 
-		String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		String cIdForm = getRutaRelativa( fLocal.getPath());
 		dialogo.setRespuesta(0);
 		dialogo.commitNuevo(cArchLocal);
 
@@ -411,13 +411,15 @@ public class Sincroniza {
 		File fLocal = null;
 		// Nombre archivo local, archivo a sincronizar
 		// V3.0:		fLocal = new File(				this.dirLocal + formRemoto.getcIdForm() + "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
-		fLocal = new File(	this.dirLocal + formRemoto.getcIdForm() );
+		fLocal = new File( this.dirLocal + formRemoto.getcIdForm());
 
 		FileOutputStream fo = null;
 		try {
 			// Verifica si existe el archivo local en la base local
 			this.formObjetoLocalDao.deleteByCIdForm(formRemoto.getcIdForm());
 
+			buildRutaRelativa(formRemoto.getcIdForm());
+			
 			fo = new FileOutputStream(fLocal);
 			fo.write(formRemoto.getcFuente());
 			fo.flush();
@@ -555,25 +557,11 @@ public class Sincroniza {
 	}
 
 	public int syncForms(int nAccion) throws FrameworkException, SQLException {
-		File fDir = new File(this.dirLocal);
-		if (!fDir.isDirectory())
+		if (!new File(this.dirLocal).isDirectory())
 			throw new FrameworkException("No existe el directorio " + this.dirLocal);
+        // Lee todos los archivos del directorio
+		List<String> lisFileLocal = leerDirRecursivo(this.dirLocal, new ArrayList<String>());
 
-		// Lee todos los archivos del directorio
-		List<String> lisFileLocal = new ArrayList<String>();
-		// Se filtra archivos con extensiones JS, CSS, VM
-		FilenameFilter filtro = new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-			    if( name.equalsIgnoreCase( ControlHSQL.DBName ))
-			        return false;
-				// String ext = ConvertFile.extension(name);
-				return true; // TTpFormObjeto.isExtensionValida( ext );
-			}
-		};
-		for (String nombreArch : fDir.list(filtro)) {
-			lisFileLocal.add(nombreArch);
-		}
 		Collections.sort(lisFileLocal);
 		// V3.0
 //		// Ordena ambas Listas antes de parear
@@ -690,17 +678,59 @@ public class Sincroniza {
 
 		return nFiles;
 	}
+	
+
+    // Se filtra archivos con extensiones JS, CSS, VM
+    private static FilenameFilter filtro = new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            if( name.equalsIgnoreCase( ControlHSQL.DBName ))
+                return false;
+            // String ext = ConvertFile.extension(name);
+            return true; // TTpFormObjeto.isExtensionValida( ext );
+        }
+    };
+	private List<String> leerDirRecursivo(String cDir, List<String> lisFile ){
+        for (String nombreArch : new File(cDir).list(filtro)) {
+            String cNombreCompleto = cDir+nombreArch;
+            if( new File(cNombreCompleto).isDirectory() )
+                leerDirRecursivo(cNombreCompleto+'/', lisFile);
+            else
+                lisFile.add(getRutaRelativa( cNombreCompleto ));
+        }
+        return lisFile;
+        // V3.0
+//      // Ordena ambas Listas antes de parear
+//      Collections.sort(lisFileLocal, new Comparator<String>() {
+//          @Override
+//          public int compare(String c1, String c2) {
+//              c1 = ConvertFile.sinExtension(c1);
+//              c2 = ConvertFile.sinExtension(c2);
+//              return c1.compareTo(c2);
+//          }
+//      });
+	    
+	}
 
 	public ControlHSQL getHsql() {
 		return hsql;
 	}
 	
-	public String getRutaRelativa(String cArchivo ){
+	private String getRutaRelativa(String cArchivo ){
 	    if(ConvertString.isEmpty( cArchivo ) || cArchivo.indexOf( '/' ) < 0 )
 	        return cArchivo;
 	    
 	    if( Parametro.getDir().regionMatches( 0, cArchivo, 0, Parametro.getDir().length() ))
 	        return cArchivo.substring( Parametro.getDir().length() + 1 );
         return cArchivo;
+	}
+	
+	private void buildRutaRelativa(String cArchivo){
+	    int nPos = -1;
+        if(ConvertString.isEmpty( cArchivo ) || (nPos = cArchivo.indexOf( '/' )) < 0 )
+            return;
+        File fDir = new File(Parametro.getDir() + "/" + cArchivo.substring( 0, nPos ));
+	    if( ! fDir.exists())
+	       fDir.mkdirs();
 	}
 }

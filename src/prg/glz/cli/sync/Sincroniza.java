@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -90,7 +89,8 @@ public class Sincroniza {
 			try {
 				formRemoto.settModif(ConvertTimestamp.toTimestamp(mapForm.get("TMODIF")));
 			} catch (ConvertException e) {
-				String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+				// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+				String cIdForm = getRutaRelativa( fLocal.getPath() );
 				logger.warn("No se pudo convertir TMODIF al actualizar el formulario" + cIdForm + "\nTMODIF="
 						+ mapForm.get("TMODIF"), e);
 			}
@@ -113,7 +113,8 @@ public class Sincroniza {
 		// if (!TTpFormObjeto.isExtensionValida(ext))
 		// return true;
 
-		String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		String cIdForm = getRutaRelativa( fLocal.getPath() ); 
 		TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm(cIdForm);
 		if (formRemoto == null)
 			formRemoto = migraMgr.getFormByCIdForm(cIdForm);
@@ -135,7 +136,7 @@ public class Sincroniza {
 		} else if (frmLocal != null) {
 			long cmpTModif = ConvertTimestamp.compareTo(frmLocal.gettModif(), formRemoto.gettModif());
 			if (cmpTModif < 0) {
-				dialogo.cofirmaCommit(fLocal.getName());
+				dialogo.cofirmaCommit(cIdForm);
 			} else if (cmpTModif == 0) {
 				if (isEqualCFuente(fLocal, formRemoto)
 						&& frmLocal.getfTpObjeto().compareTo(formRemoto.getfTpObjeto()) == 0)
@@ -186,14 +187,15 @@ public class Sincroniza {
 //		if (!TTpFormObjeto.isExtensionValida(ext))
 //			return;
 
-		String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
+		String cIdForm = getRutaRelativa( fLocal.getPath() );
 		TFormObjetoMigra formRemoto = migraMgr.getFormByCIdForm(cIdForm);
 		// NO existe en sevidor remoto, no se hace nada, porque ya està borrado
 		if (formRemoto == null)
 			return;
 
 		dialogo.setRespuesta(0);
-		dialogo.commitBorrar(fLocal.getName());
+		dialogo.commitBorrar(cIdForm);
 		if (dialogo.getRespuesta() == DlgOpSync.DLG_CANCEL)
 			return;
 		if (dialogo.getRespuesta() == DlgOpSync.DLG_COMMIT) {
@@ -222,7 +224,7 @@ public class Sincroniza {
 				// El archivo nunca estuvo en el Sitio, solo está en el disco,
 				// se pregunta si se hace commit o borrar el
 				// local, si se hace commit se pide además el tipo de formulario
-				dialogo.commitNuevo(fLocal.getName());
+				dialogo.commitNuevo(cIdForm);
 			}
 		} else {
 			if (formRemoto == null) {
@@ -230,7 +232,7 @@ public class Sincroniza {
 				// sitio, se pregunta si se hace commit o
 				// borrar, avisando que este formulario es probable que ya haya
 				// sido borrado del sitio
-				dialogo.commitBorrado(fLocal.getName());
+				dialogo.commitBorrado(cIdForm);
 			} else {
 				// La fecha de modificación del archivo local, es mayor que la
 				// fecha de modificación del archivo remoto,
@@ -238,7 +240,7 @@ public class Sincroniza {
 				// usuario puede solicitar COMMIT
 				long cmpTModif = ConvertTimestamp.compareTo(frmLocal.gettModif(), formRemoto.gettModif());
 				if (cmpTModif < 0) {
-					dialogo.cofirmaCommit(fLocal.getName());
+					dialogo.cofirmaCommit(cIdForm);
 				} else if (cmpTModif == 0) {
 					if (isEqualCFuente(fLocal, formRemoto) && frmLocal.getfTpObjeto() == formRemoto.getfTpObjeto()) {
 						dialogo.setRespuesta(DlgOpSync.DLG_SALTAR);
@@ -268,7 +270,8 @@ public class Sincroniza {
 		if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
 			if (formRemoto == null) {
 				fLocal.delete();
-				formObjetoLocalDao.deleteByCIdForm(ConvertFile.sinExtension(fLocal.getName()));
+				// formObjetoLocalDao.deleteByCIdForm(ConvertFile.sinExtension(fLocal.getName()));
+				formObjetoLocalDao.deleteByCIdForm(cIdForm);
 			} else {
 				FileOutputStream fo = null;
 				try {
@@ -276,7 +279,7 @@ public class Sincroniza {
 					fo.write(formRemoto.getcFuente());
 					fo.flush();
 				} catch (Exception e) {
-					throw new FrameworkException("No se pudo bajar el archivo al disco:" + fLocal.getName(), e);
+					throw new FrameworkException("No se pudo bajar el archivo al disco:" + cIdForm, e);
 				} finally {
 					try {
 						if (fo != null)
@@ -322,7 +325,8 @@ public class Sincroniza {
 		}
 		if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
 			fLocal.delete();
-			formObjetoLocalDao.deleteByCIdForm(ConvertFile.sinExtension(fLocal.getName()));
+			// formObjetoLocalDao.deleteByCIdForm(ConvertFile.sinExtension(fLocal.getName()));
+			formObjetoLocalDao.deleteByCIdForm(cIdForm);
 			return true;
 		}
 		// Salta archivo
@@ -334,6 +338,7 @@ public class Sincroniza {
 		// V3.0
 		// File fLocal = new File(	this.dirLocal + formRemoto.getcIdForm() + "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
 		File fLocal = new File(	this.dirLocal + formRemoto.getcIdForm());
+		String cIdForm = getRutaRelativa( fLocal.getPath());
 
 		FileOutputStream fo = null;
 		try {
@@ -361,13 +366,13 @@ public class Sincroniza {
 				// usuario puede solicitar COMMIT
 				long cmpTModif = ConvertTimestamp.compareTo(frmLocal.gettModif(), formRemoto.gettModif());
 				if (cmpTModif > 0) {
-					dialogo.cofirmaUpdate(fLocal.getName());
+					dialogo.cofirmaUpdate(cIdForm);
 				} else if (cmpTModif == 0) {
 					if (isEqualCFuente(fLocal, formRemoto)
 							&& frmLocal.getfTpObjeto().equals(formRemoto.getfTpObjeto())) {
 						dialogo.setRespuesta(DlgOpSync.DLG_SALTAR);
 					} else {
-						dialogo.cofirmaUpdate(fLocal.getName());
+						dialogo.cofirmaUpdate(cIdForm);
 					}
 				}
 			}
@@ -679,19 +684,8 @@ public class Sincroniza {
 		return nFiles;
 	}
 	
-
-    // Se filtra archivos con extensiones JS, CSS, VM
-    private static FilenameFilter filtro = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            if( name.equalsIgnoreCase( ControlHSQL.DBName ))
-                return false;
-            // String ext = ConvertFile.extension(name);
-            return true; // TTpFormObjeto.isExtensionValida( ext );
-        }
-    };
 	private List<String> leerDirRecursivo(String cDir, List<String> lisFile ){
-        for (String nombreArch : new File(cDir).list(filtro)) {
+        for (String nombreArch : new File(cDir).list(NombreArchivo.filtro)) {
             String cNombreCompleto = cDir+nombreArch;
             if( new File(cNombreCompleto).isDirectory() )
                 leerDirRecursivo(cNombreCompleto+'/', lisFile);

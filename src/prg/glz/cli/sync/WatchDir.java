@@ -72,8 +72,10 @@ public class WatchDir implements Runnable {
 
     private final WatchService        watcher;
     private final Map<WatchKey, Path> keys;
-    private final Sincroniza          migraFrm;
+	private final Path 				  dirRaiz;
+	private final Sincroniza          migraFrm;
     private boolean                   trace  = false;
+
 
     @SuppressWarnings("unchecked")
     static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -87,6 +89,7 @@ public class WatchDir implements Runnable {
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey, Path>();
         this.migraFrm = migraFrm;
+        this.dirRaiz = dir;
 
         logger.info( "Buscando " + dir );
         // Recursivo recursive
@@ -175,6 +178,21 @@ public class WatchDir implements Runnable {
                 Path child = dir.resolve( name );
                 File fileChild = child.toFile();
 
+                if( fileChild.isDirectory()){
+                	logger.info(fileChild.toString());
+                	// Agrega directorio a WhatchDir
+                	try {
+						registerAll(this.dirRaiz);
+					} catch (IOException e) {
+						logger.error("Al volver a registrar el directorio:"+this.dirRaiz, e);
+					}
+                	continue;
+                }
+                // Nombre aceptados solamente
+                if( ! NombreArchivo.aceptados(fileChild)){
+                	continue;
+                }
+                
                 if (kind == ENTRY_MODIFY) {
                     // Se controla que el evento no este duplicado
                     // if (fileChild.lastModified() - lastModif > 100) {
@@ -245,6 +263,10 @@ public class WatchDir implements Runnable {
     public void run() {
         this.processEvents();
     }
+
+    public Path getDirRaiz() {
+		return dirRaiz;
+	}
 
     public Sincroniza getMigraFrm() {
         return migraFrm;

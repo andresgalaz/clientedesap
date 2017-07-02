@@ -144,7 +144,7 @@ public class TFormObjectMigraDAO {
         try {
             cSql = "CREATE TABLE tFormObjeto ( " +
                     "  pFormObjeto   INTEGER IDENTITY " +
-                    ", cIdForm       VARCHAR(40) NOT NULL " +
+                    ", cIdForm       VARCHAR(255) NOT NULL " +
                     ", nVersion      INTEGER NOT NULL " +
                     ", cObservacion  VARCHAR(400) NULL " +
                     ", fTpObjeto     INTEGER NOT NULL " +

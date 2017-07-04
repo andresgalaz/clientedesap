@@ -89,8 +89,9 @@ public class Sincroniza {
 			try {
 				formRemoto.settModif(ConvertTimestamp.toTimestamp(mapForm.get("TMODIF")));
 			} catch (ConvertException e) {
-				// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
-				String cIdForm = getRutaRelativa( fLocal.getPath() );
+				// V3.0: String cIdForm =
+				// ConvertFile.sinExtension(fLocal.getName());
+				String cIdForm = getRutaRelativa(fLocal.getPath());
 				logger.warn("No se pudo convertir TMODIF al actualizar el formulario" + cIdForm + "\nTMODIF="
 						+ mapForm.get("TMODIF"), e);
 			}
@@ -114,7 +115,7 @@ public class Sincroniza {
 		// return true;
 
 		// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
-		String cIdForm = getRutaRelativa( fLocal.getPath() ); 
+		String cIdForm = getRutaRelativa(fLocal.getPath());
 		TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm(cIdForm);
 		if (formRemoto == null)
 			formRemoto = migraMgr.getFormByCIdForm(cIdForm);
@@ -130,9 +131,9 @@ public class Sincroniza {
 			formRemoto = new TFormObjetoMigra();
 			formRemoto.setcIdForm(cIdForm);
 			// V3.0
-//			formRemoto.setfTpObjeto(TTpFormObjeto.getTpFormObjetoByExtension(fLocal.getName()));
-//			if ("JS".equalsIgnoreCase(ext))
-//				formRemoto.setfTpObjeto(dialogo.getTpObjeto());
+			// formRemoto.setfTpObjeto(TTpFormObjeto.getTpFormObjetoByExtension(fLocal.getName()));
+			// if ("JS".equalsIgnoreCase(ext))
+			// formRemoto.setfTpObjeto(dialogo.getTpObjeto());
 		} else if (frmLocal != null) {
 			long cmpTModif = ConvertTimestamp.compareTo(frmLocal.gettModif(), formRemoto.gettModif());
 			if (cmpTModif < 0) {
@@ -183,12 +184,12 @@ public class Sincroniza {
 		if (fLocal == null || fLocal.exists())
 			return;
 		// V3.0
-//		String ext = ConvertFile.extension(fLocal);
-//		if (!TTpFormObjeto.isExtensionValida(ext))
-//			return;
+		// String ext = ConvertFile.extension(fLocal);
+		// if (!TTpFormObjeto.isExtensionValida(ext))
+		// return;
 
 		// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
-		String cIdForm = getRutaRelativa( fLocal.getPath() );
+		String cIdForm = getRutaRelativa(fLocal.getPath());
 		TFormObjetoMigra formRemoto = migraMgr.getFormByCIdForm(cIdForm);
 		// NO existe en sevidor remoto, no se hace nada, porque ya està borrado
 		if (formRemoto == null)
@@ -210,12 +211,12 @@ public class Sincroniza {
 		if (fLocal == null || !fLocal.isFile() || !fLocal.exists())
 			return;
 		// V3.0
-//		String ext = ConvertFile.extension(fLocal);
-//		if (!TTpFormObjeto.isExtensionValida(ext))
-//			return;
+		// String ext = ConvertFile.extension(fLocal);
+		// if (!TTpFormObjeto.isExtensionValida(ext))
+		// return;
 
 		// V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
-		String cIdForm = getRutaRelativa( fLocal.getPath() );
+		String cIdForm = getRutaRelativa(fLocal.getPath());
 		TFormObjetoMigra formRemoto = migraMgr.getFormByCIdForm(cIdForm);
 		TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm(cIdForm);
 		dialogo.setRespuesta(DlgOpSync.DLG_COMMIT);
@@ -257,9 +258,9 @@ public class Sincroniza {
 					formRemoto = new TFormObjetoMigra();
 					formRemoto.setcIdForm(cIdForm);
 					// V3.0
-//					formRemoto.setfTpObjeto(TTpFormObjeto.getTpFormObjetoByExtension(fLocal.getName()));
-//					if ("JS".equalsIgnoreCase(ext))
-//						formRemoto.setfTpObjeto(dialogo.getTpObjeto());
+					// formRemoto.setfTpObjeto(TTpFormObjeto.getTpFormObjetoByExtension(fLocal.getName()));
+					// if ("JS".equalsIgnoreCase(ext))
+					// formRemoto.setfTpObjeto(dialogo.getTpObjeto());
 
 				} else
 					formRemoto = frmLocal;
@@ -303,11 +304,11 @@ public class Sincroniza {
 		if (!fLocal.isFile() || !fLocal.exists())
 			return true;
 		// V3.0
-//		String ext = ConvertFile.extension(fLocal);
-//		if (!TTpFormObjeto.isExtensionValida(ext))
-//			return true;
+		// String ext = ConvertFile.extension(fLocal);
+		// if (!TTpFormObjeto.isExtensionValida(ext))
+		// return true;
 
-		String cIdForm = getRutaRelativa( fLocal.getPath());
+		String cIdForm = getRutaRelativa(fLocal.getPath());
 		dialogo.setRespuesta(0);
 		dialogo.commitNuevo(cArchLocal);
 
@@ -318,9 +319,9 @@ public class Sincroniza {
 			TFormObjetoMigra formRemoto = new TFormObjetoMigra();
 			formRemoto.setcIdForm(cIdForm);
 			// V3.0
-//			formRemoto.setfTpObjeto(TTpFormObjeto.getTpFormObjetoByExtension(fLocal.getName()));
-//			if ("JS".equalsIgnoreCase(ext))
-//				formRemoto.setfTpObjeto(dialogo.getTpObjeto());
+			// formRemoto.setfTpObjeto(TTpFormObjeto.getTpFormObjetoByExtension(fLocal.getName()));
+			// if ("JS".equalsIgnoreCase(ext))
+			// formRemoto.setfTpObjeto(dialogo.getTpObjeto());
 			return uploadServerAndUpd(fLocal, formRemoto);
 		}
 		if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
@@ -336,9 +337,10 @@ public class Sincroniza {
 	private boolean bajaArchivoExistente(TFormObjetoMigra formRemoto) throws FrameworkException, SQLException {
 		// Nombre archivo local, archivo a sincronizar
 		// V3.0
-		// File fLocal = new File(	this.dirLocal + formRemoto.getcIdForm() + "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
-		File fLocal = new File(	this.dirLocal + formRemoto.getcIdForm());
-		String cIdForm = getRutaRelativa( fLocal.getPath());
+		// File fLocal = new File( this.dirLocal + formRemoto.getcIdForm() + "."
+		// + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
+		File fLocal = new File(this.dirLocal + formRemoto.getcIdForm());
+		String cIdForm = getRutaRelativa(fLocal.getPath());
 
 		FileOutputStream fo = null;
 		try {
@@ -415,8 +417,9 @@ public class Sincroniza {
 	private void bajaArchivoNuevo(TFormObjetoMigra formRemoto) throws FrameworkException, SQLException {
 		File fLocal = null;
 		// Nombre archivo local, archivo a sincronizar
-		// V3.0:		fLocal = new File(				this.dirLocal + formRemoto.getcIdForm() + "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
-		fLocal = new File( this.dirLocal + formRemoto.getcIdForm());
+		// V3.0: fLocal = new File( this.dirLocal + formRemoto.getcIdForm() +
+		// "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
+		fLocal = new File(this.dirLocal + formRemoto.getcIdForm());
 
 		FileOutputStream fo = null;
 		try {
@@ -424,7 +427,7 @@ public class Sincroniza {
 			this.formObjetoLocalDao.deleteByCIdForm(formRemoto.getcIdForm());
 
 			buildRutaRelativa(formRemoto.getcIdForm());
-			
+
 			fo = new FileOutputStream(fLocal);
 			fo.write(formRemoto.getcFuente());
 			fo.flush();
@@ -472,15 +475,16 @@ public class Sincroniza {
 			} catch (Exception e2) {
 			}
 		}
-		return Arrays.equals( cFuenteLocal, frmRemoto.getcFuente());
+		return Arrays.equals(cFuenteLocal, frmRemoto.getcFuente());
 	}
 
 	private boolean eliminaRemoto(TFormObjetoMigra formRemoto) throws SQLException, FrameworkException {
 		if (formRemoto == null)
 			return true;
 		// Nombre archivo local, archivo a sincronizar
-		// V3.0: File fSync = new File( this.dirLocal + formRemoto.getcIdForm() + "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
-		File fSync = new File( this.dirLocal + formRemoto.getcIdForm() );
+		// V3.0: File fSync = new File( this.dirLocal + formRemoto.getcIdForm()
+		// + "." + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
+		File fSync = new File(this.dirLocal + formRemoto.getcIdForm());
 
 		dialogo.setRespuesta(0);
 		dialogo.commitBorrar(fSync.getName());
@@ -564,20 +568,20 @@ public class Sincroniza {
 	public int syncForms(int nAccion) throws FrameworkException, SQLException {
 		if (!new File(this.dirLocal).isDirectory())
 			throw new FrameworkException("No existe el directorio " + this.dirLocal);
-        // Lee todos los archivos del directorio
+		// Lee todos los archivos del directorio
 		List<String> lisFileLocal = leerDirRecursivo(this.dirLocal, new ArrayList<String>());
 
 		Collections.sort(lisFileLocal);
 		// V3.0
-//		// Ordena ambas Listas antes de parear
-//		Collections.sort(lisFileLocal, new Comparator<String>() {
-//			@Override
-//			public int compare(String c1, String c2) {
-//				c1 = ConvertFile.sinExtension(c1);
-//				c2 = ConvertFile.sinExtension(c2);
-//				return c1.compareTo(c2);
-//			}
-//		});
+		// // Ordena ambas Listas antes de parear
+		// Collections.sort(lisFileLocal, new Comparator<String>() {
+		// @Override
+		// public int compare(String c1, String c2) {
+		// c1 = ConvertFile.sinExtension(c1);
+		// c2 = ConvertFile.sinExtension(c2);
+		// return c1.compareTo(c2);
+		// }
+		// });
 
 		// Lee formularios desde el servidor
 		List<TFormObjetoMigra> lisFormSite;
@@ -683,48 +687,48 @@ public class Sincroniza {
 
 		return nFiles;
 	}
-	
-	private List<String> leerDirRecursivo(String cDir, List<String> lisFile ){
-        for (String nombreArch : new File(cDir).list(NombreArchivo.filtro)) {
-            String cNombreCompleto = cDir+nombreArch;
-            if( new File(cNombreCompleto).isDirectory() )
-                leerDirRecursivo(cNombreCompleto+'/', lisFile);
-            else
-                lisFile.add(getRutaRelativa( cNombreCompleto ));
-        }
-        return lisFile;
-        // V3.0
-//      // Ordena ambas Listas antes de parear
-//      Collections.sort(lisFileLocal, new Comparator<String>() {
-//          @Override
-//          public int compare(String c1, String c2) {
-//              c1 = ConvertFile.sinExtension(c1);
-//              c2 = ConvertFile.sinExtension(c2);
-//              return c1.compareTo(c2);
-//          }
-//      });
-	    
+
+	private List<String> leerDirRecursivo(String cDir, List<String> lisFile) {
+		for (String nombreArch : new File(cDir).list(NombreArchivo.filtro)) {
+			String cNombreCompleto = cDir + nombreArch;
+			if (new File(cNombreCompleto).isDirectory())
+				leerDirRecursivo(cNombreCompleto + '/', lisFile);
+			else
+				lisFile.add(getRutaRelativa(cNombreCompleto));
+		}
+		return lisFile;
+		// V3.0
+		// // Ordena ambas Listas antes de parear
+		// Collections.sort(lisFileLocal, new Comparator<String>() {
+		// @Override
+		// public int compare(String c1, String c2) {
+		// c1 = ConvertFile.sinExtension(c1);
+		// c2 = ConvertFile.sinExtension(c2);
+		// return c1.compareTo(c2);
+		// }
+		// });
+
 	}
 
 	public ControlHSQL getHsql() {
 		return hsql;
 	}
-	
-	private String getRutaRelativa(String cArchivo ){
-	    if(ConvertString.isEmpty( cArchivo ) || cArchivo.indexOf( '/' ) < 0 )
-	        return cArchivo;
-	    
-	    if( Parametro.getDir().regionMatches( 0, cArchivo, 0, Parametro.getDir().length() ))
-	        return cArchivo.substring( Parametro.getDir().length() + 1 );
-        return cArchivo;
+
+	private String getRutaRelativa(String cArchivo) {
+		if (ConvertString.isEmpty(cArchivo) || cArchivo.indexOf('/') < 0)
+			return cArchivo;
+
+		if (Parametro.getDir().regionMatches(0, cArchivo, 0, Parametro.getDir().length()))
+			return cArchivo.substring(Parametro.getDir().length() + 1);
+		return cArchivo;
 	}
-	
-	private void buildRutaRelativa(String cArchivo){
-	    int nPos = -1;
-        if(ConvertString.isEmpty( cArchivo ) || (nPos = cArchivo.indexOf( '/' )) < 0 )
-            return;
-        File fDir = new File(Parametro.getDir() + "/" + cArchivo.substring( 0, nPos ));
-	    if( ! fDir.exists())
-	       fDir.mkdirs();
+
+	private void buildRutaRelativa(String cArchivo) {
+		int nPos = -1;
+		if (ConvertString.isEmpty(cArchivo) || (nPos = cArchivo.lastIndexOf('/')) < 0)
+			return;
+		File fDir = new File(Parametro.getDir() + "/" + cArchivo.substring(0, nPos));
+		if (!fDir.exists())
+			fDir.mkdirs();
 	}
 }

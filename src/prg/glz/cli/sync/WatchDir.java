@@ -207,7 +207,6 @@ public class WatchDir implements Runnable {
                 } else if (kind == ENTRY_DELETE) {
                     // No se hace nada, aglunos editores, en ves de modificar,
                     // primero hace un DELETE y después un CREATE
-                    System.out.println( "BORRA:" + fileChild.getName() );
                     try {
                         this.migraFrm.deleteFile( fileChild );
                     } catch (FrameworkException | SQLException e) {

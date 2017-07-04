@@ -40,7 +40,7 @@ public class FrmPrincipal extends JFrame {
         // Configura pantalla actual
         this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         this.setLayout( new BorderLayout() );
-        this.setBounds( 100, 100, 900, 400 );
+        this.setBounds( 100, 100, 700, 310 );
         // Carga icono
         this.setIconImage( new ImageIcon( this.getClass().getResource( "freefilesync4.png" ) ).getImage() );
         // Si hay soporte de iconos en barra de tareas

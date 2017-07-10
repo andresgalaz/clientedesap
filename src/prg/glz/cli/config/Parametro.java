@@ -17,6 +17,7 @@ public class Parametro {
     private static String      password;
     private static String      passwordSave;
     private static ControlHSQL hsql;
+    private static final String SERVER_PROPS_NAME = "server4.properties";
 
     static {
         if (servidor == null) {
@@ -33,7 +34,7 @@ public class Parametro {
 
         // First try loading from the current directory
         try {
-            File f = new File( "server.properties" );
+            File f = new File( SERVER_PROPS_NAME );
             is = new FileInputStream( f );
         } catch (Exception e) {
             is = null;
@@ -42,7 +43,7 @@ public class Parametro {
         try {
             if (is == null) {
                 // Try loading from classpath
-                is = getClass().getResourceAsStream( "server.properties" );
+                is = getClass().getResourceAsStream( SERVER_PROPS_NAME );
             }
 
             // Try loading properties from the file (if found)
@@ -64,7 +65,7 @@ public class Parametro {
         props.setProperty( "password", password == null ? "" : password );
         props.setProperty( "passwordSave", passwordSave == null ? "0" : passwordSave );
         props.setProperty( "dir", dir == null ? "" : dir );
-        File f = new File( "server.properties" );
+        File f = new File( SERVER_PROPS_NAME );
         OutputStream out = new FileOutputStream( f );
         props.store( out, "Configuracion Sincronizador Framework Compustrom" );
     }

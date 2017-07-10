@@ -23,6 +23,8 @@ public class NombreArchivo {
 			return false;
 		if ("swp".equalsIgnoreCase(ext))
 			return false;
+        if ("log".equalsIgnoreCase(ext))
+            return false;
 		if (ext.indexOf('~') >= 0)
 			return false;
 		return true;

@@ -148,7 +148,7 @@ public class TFormObjectMigraDAO {
                     ", nVersion      INTEGER NOT NULL " +
                     ", cObservacion  VARCHAR(400) NULL " +
                     ", fTpObjeto     INTEGER NOT NULL " +
-                    ", tModif        TIMESTAMP NOT NULL " +
+                    ", tModif        TIMESTAMP WITH TIME ZONE NOT NULL " +
                     ");";
             st.executeUpdate( cSql );
         } catch (SQLException e) {

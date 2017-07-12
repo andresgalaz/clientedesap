@@ -1,5 +1,6 @@
 = Pendiente
- * Mantener conexión activa 2016/01/21
+ * Selección Rutas a sincronizar
+ * Lista de extensiones a omitir
   
 = v0020e =
 @ 13/10/2016

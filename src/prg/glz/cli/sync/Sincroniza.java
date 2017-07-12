@@ -139,8 +139,7 @@ public class Sincroniza {
 			if (cmpTModif < 0) {
 				dialogo.cofirmaCommit(cIdForm);
 			} else if (cmpTModif == 0) {
-				if (isEqualCFuente(fLocal, formRemoto)
-						&& frmLocal.getfTpObjeto().compareTo(formRemoto.getfTpObjeto()) == 0)
+				if (isEqualCFuente(fLocal, formRemoto))
 					dialogo.setRespuesta(DlgOpSync.DLG_SALTAR);
 			}
 		} else {
@@ -243,7 +242,7 @@ public class Sincroniza {
 				if (cmpTModif < 0) {
 					dialogo.cofirmaCommit(cIdForm);
 				} else if (cmpTModif == 0) {
-					if (isEqualCFuente(fLocal, formRemoto) && frmLocal.getfTpObjeto() == formRemoto.getfTpObjeto()) {
+					if (isEqualCFuente(fLocal, formRemoto) ){
 						dialogo.setRespuesta(DlgOpSync.DLG_SALTAR);
 					}
 				}
@@ -341,7 +340,6 @@ public class Sincroniza {
 		// + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
 		File fLocal = new File(this.dirLocal + formRemoto.getcIdForm());
 		String cIdForm = getRutaRelativa(fLocal.getPath());
-
 		FileOutputStream fo = null;
 		try {
 			// Se define por defacto que se va a actualizar
@@ -370,8 +368,7 @@ public class Sincroniza {
 				if (cmpTModif > 0) {
 					dialogo.cofirmaUpdate(cIdForm);
 				} else if (cmpTModif == 0) {
-					if (isEqualCFuente(fLocal, formRemoto)
-							&& frmLocal.getfTpObjeto().equals(formRemoto.getfTpObjeto())) {
+					if (isEqualCFuente(fLocal, formRemoto)) {
 						dialogo.setRespuesta(DlgOpSync.DLG_SALTAR);
 					} else {
 						dialogo.cofirmaUpdate(cIdForm);

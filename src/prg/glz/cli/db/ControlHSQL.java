@@ -21,7 +21,7 @@ public class ControlHSQL {
             throw new SQLException( "Falló al cargar Drivers de HSQLDB JDBC", e );
         }
         this.DBHDir = cDir + DBName;
-        String cNombreDB = DBH + DBHDir + "/xformgen";
+        String cNombreDB = DBH + DBHDir + "/xformgen4";
         try {
             con = DriverManager.getConnection( cNombreDB );
         } catch (Exception e) {

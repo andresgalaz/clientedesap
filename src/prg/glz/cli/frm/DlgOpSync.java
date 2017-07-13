@@ -209,6 +209,7 @@ public class DlgOpSync extends JDialog {
 		coSaltar = new JButton("Saltar");
 		coCancel = new JButton("Cancelar");
 		chRepetir = new JCheckBox("Repetir");
+		chRepetir.setForeground( Constante.COLOR_LABEL );
 		buttonPane.add(coUpdate);
 		buttonPane.add(coCommit);
 		buttonPane.add(coSaltar);

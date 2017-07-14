@@ -11,13 +11,14 @@ import java.util.Properties;
 import prg.glz.cli.db.ControlHSQL;
 
 public class Parametro {
+    public static final String SERVER_PROPS_NAME = "server4.properties";
+
     private static String      dir;
     private static String      servidor;
     private static String      usuario;
     private static String      password;
     private static String      passwordSave;
     private static ControlHSQL hsql;
-    private static final String SERVER_PROPS_NAME = "server4.properties";
 
     static {
         if (servidor == null) {

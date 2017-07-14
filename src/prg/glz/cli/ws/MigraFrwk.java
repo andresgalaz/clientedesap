@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,9 @@ import org.apache.log4j.Logger;
 import prg.glz.FrameworkException;
 import prg.glz.cli.sync.MultipartUtility;
 import prg.glz.data.entity.TFormObjetoMigra;
+import prg.glz.data.entity.TTpFormObjeto;
+import prg.util.cnv.ConvertException;
+import prg.util.cnv.ConvertMap;
 import prg.util.cnv.ConvertString;
 
 public class MigraFrwk extends AbstractFrwk {
@@ -34,6 +38,79 @@ public class MigraFrwk extends AbstractFrwk {
 
     public List<TFormObjetoMigra> getListForm() throws FrameworkException {
         return getListForm( null );
+    }
+
+    /**
+     * <p>
+     * Trae la tabla de tipos de formularios, que en realidad en la versión 4, serían solo las extensiones posibles
+     * </p>
+     * 
+     * @return lista de objetos TTpFormObjeto
+     * @throws FrameworkException
+     */
+    public List<TTpFormObjeto> getAllTpForm() throws FrameworkException {
+        try {
+            URLConnection con = new URL( super.getUrlServer() + "/do/jsonCall" ).openConnection();
+            super.sendHeader( con );
+            con.setDoOutput( true );
+            OutputStream out = con.getOutputStream();
+            out.write( "prm_dataSource=xgenJNDI&prm_funcion=xfg.db.listaTabla&prm_cNombreTabla=tTpFormObjeto".getBytes( "UTF-8" ) );
+            out.close();
+
+            Map<String, Object> mResp = AbstractFrwk.getJsonMap( con.getInputStream() );
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> records = (List<Map<String, Object>>) mResp.get( "records" );
+            List<TTpFormObjeto> lisTpForm = new ArrayList<TTpFormObjeto>( records.size() );
+            // Convierte un ArrayList de MAP a un ArrayList de TTpFormObjeto
+            for (Map<String, Object> m : records) {
+                lisTpForm.add( (TTpFormObjeto) ConvertMap.toObject( m, TTpFormObjeto.class ) );
+            }
+            return lisTpForm;
+
+        } catch (ConvertException e) {
+            String cMsg;
+            logger.error( cMsg = "Se esperaba un objeto del tipo tTpFormObjeto:" + super.getUrlServer(), e );
+            throw new FrameworkException( cMsg, e );
+        } catch (IOException e) {
+            String cMsg;
+            logger.error( cMsg = "No se pudo leer URL:" + super.getUrlServer(), e );
+            throw new FrameworkException( cMsg, e );
+        }
+    }
+
+    /**
+     * <p>
+     * Inserta nuevos tipos de formularios. Es decir nuevas extetensinoes de archivos
+     * </p>
+     * 
+     * @param cExtension
+     * @return
+     * @throws FrameworkException
+     */
+    public void updateTpForm(String cExtension) throws FrameworkException {
+        try {
+            URLConnection con = new URL( super.getUrlServer() + "/do/jsonCall" ).openConnection();
+            super.sendHeader( con );
+            con.setDoOutput( true );
+            OutputStream out = con.getOutputStream();
+            {
+                // Envía los parámetros
+                String cPrm = "prm_dataSource=xgenJNDI";
+                cPrm += "&prm_funcion=jStore.paForm.operTpFormUpd";
+                cPrm += "&prm_cNombre=" + cExtension;
+                out.write( cPrm.getBytes( "UTF-8" ) );
+            }
+            out.close();
+            // Recibe la respuesta desde el servidor
+            Map<String, Object> mResp = AbstractFrwk.getJsonMap( con.getInputStream() );
+            if (!(Boolean) mResp.get( "success" ))
+                throw new FrameworkException( (String) mResp.get( "message" ) );
+
+        } catch (IOException e) {
+            String cMsg;
+            logger.error( cMsg = "No se pudo leer URL:" + super.getUrlServer(), e );
+            throw new FrameworkException( cMsg, e );
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -38,7 +38,7 @@ public class LoginFrwk extends AbstractFrwk {
             URLConnection con = url.openConnection();
             super.setCookies( con.getHeaderFields().get( "Set-Cookie" ) );
 
-            // Con las COOKIES almacendas, se procede a hacer el lgin
+            // Con las COOKIES almacendas, se procede a hacer el login
             url = new URL( super.getUrlServer() + "/do/login" );
             con = url.openConnection();
             super.sendHeader( con );

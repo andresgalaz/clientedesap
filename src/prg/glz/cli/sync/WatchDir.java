@@ -7,21 +7,21 @@ package prg.glz.cli.sync;
  * modification, are permitted provided that the following conditions
  * are met:
  *
- *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * - Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  *
- *   - Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
+ * - Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  *
- *   - Neither the name of Oracle nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
+ * - Neither the name of Oracle nor the names of its
+ * contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
@@ -72,10 +72,9 @@ public class WatchDir implements Runnable {
 
     private final WatchService        watcher;
     private final Map<WatchKey, Path> keys;
-	private final Path 				  dirRaiz;
-	private final Sincroniza          migraFrm;
+    private final Path                dirRaiz;
+    private final Sincroniza          sincroniza;
     private boolean                   trace  = false;
-
 
     @SuppressWarnings("unchecked")
     static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -85,10 +84,10 @@ public class WatchDir implements Runnable {
     /**
      * Creates a WatchService and registers the given directory
      */
-    public WatchDir(Path dir, Sincroniza migraFrm) throws IOException {
+    public WatchDir(Path dir, Sincroniza sync) throws IOException {
         this.watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey, Path>();
-        this.migraFrm = migraFrm;
+        this.sincroniza = sync;
         this.dirRaiz = dir;
 
         logger.info( "Buscando " + dir );
@@ -106,7 +105,7 @@ public class WatchDir implements Runnable {
      * Register the given directory with the WatchService
      */
     private void register(Path dir) throws IOException {
-        logger.debug( "register Path="+dir.toString() );
+        logger.debug( "register Path=" + dir.toString() );
         WatchKey key = dir.register( watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY );
         if (trace) {
             Path prev = keys.get( key );
@@ -128,9 +127,8 @@ public class WatchDir implements Runnable {
         Files.walkFileTree( start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                    throws IOException
-            {
-                if (dir.toString().equals( WatchDir.this.migraFrm.getHsql().getDatabaseDir() ))
+                    throws IOException {
+                if (dir.toString().equals( WatchDir.this.sincroniza.getHsql().getDatabaseDir() ))
                     return FileVisitResult.SKIP_SUBTREE;
                 register( dir );
                 return FileVisitResult.CONTINUE;
@@ -178,27 +176,31 @@ public class WatchDir implements Runnable {
                 Path child = dir.resolve( name );
                 File fileChild = child.toFile();
 
-                if( fileChild.isDirectory()){
-                	logger.info(fileChild.toString());
-                	// Agrega directorio a WhatchDir
-                	try {
-						registerAll(this.dirRaiz);
-					} catch (IOException e) {
-						logger.error("Al volver a registrar el directorio:"+this.dirRaiz, e);
-					}
-                	continue;
+                if (fileChild.isDirectory()) {
+                    logger.info( fileChild.toString() );
+                    // Agrega directorio a WhatchDir
+                    try {
+                        registerAll( this.dirRaiz );
+                    } catch (IOException e) {
+                        logger.error( "Al volver a registrar el directorio:" + this.dirRaiz, e );
+                    }
+                    continue;
                 }
-                // Nombre aceptados solamente
-                if( ! NombreArchivo.aceptados(fileChild)){
-                	continue;
+
+                // Verifica la extensión y da la opción de crear
+                try {
+                    if (!this.sincroniza.verificaTpArchivo( fileChild.getName() ))
+                        continue;
+                } catch (FrameworkException ex) {
+                    continue;
                 }
-                
+
                 if (kind == ENTRY_MODIFY) {
                     // Se controla que el evento no este duplicado
                     // if (fileChild.lastModified() - lastModif > 100) {
                     // Se llama al servidor WEB para subir el archivo
                     try {
-                        this.migraFrm.syncFile( fileChild );
+                        this.sincroniza.syncFile( fileChild );
                     } catch (FrameworkException | SQLException e) {
                         logger.error( "No se pudo subir archivo:" + fileChild, e );
                         JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
@@ -208,16 +210,16 @@ public class WatchDir implements Runnable {
                     // No se hace nada, aglunos editores, en ves de modificar,
                     // primero hace un DELETE y después un CREATE
                     try {
-                        this.migraFrm.deleteFile( fileChild );
+                        this.sincroniza.deleteFile( fileChild );
                     } catch (FrameworkException | SQLException e) {
                         logger.error( "No se pudo subir archivo:" + fileChild, e );
                         JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
-                    }                    
+                    }
                 } else if (kind == ENTRY_CREATE) {
                     if (fileChild.isFile()) {
                         // Se llama al servidor WEB para subir el archivo
                         try {
-                            this.migraFrm.syncFile( fileChild );
+                            this.sincroniza.syncFile( fileChild );
                         } catch (FrameworkException | SQLException e) {
                             logger.error( "No se pudo subir archivo:" + fileChild, e );
                             JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
@@ -264,11 +266,11 @@ public class WatchDir implements Runnable {
     }
 
     public Path getDirRaiz() {
-		return dirRaiz;
-	}
+        return dirRaiz;
+    }
 
     public Sincroniza getMigraFrm() {
-        return migraFrm;
+        return sincroniza;
     }
 
     public void detener() {

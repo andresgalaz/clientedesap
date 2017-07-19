@@ -2,6 +2,11 @@
  * Selección Rutas a sincronizar
  * Lista de extensiones a omitir
   
+= v4000 =
+@ 19/07/2017
+ * Inicio versión 4
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 = v0020e =
 @ 13/10/2016
  * Se agrega JSON como tipo de formulario, cambio en webDesap.v037e_ha

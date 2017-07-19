@@ -37,7 +37,7 @@ public class Sincroniza {
     private static int          ACC_UPDATE = 1;
     private static int          ACC_COMMIT = 2;
 
-    private MigraFrwk           migraMgr;
+    private MigraFrwk           migraFrwk;
     private DlgOpSync           dialogo;
     private String              dirLocal;
     private String              cUrlRemota;
@@ -78,12 +78,12 @@ public class Sincroniza {
         }
 
         // Crea conexión al Framework
-        this.migraMgr = new MigraFrwk( this.cUrlRemota );
+        this.migraFrwk = new MigraFrwk( this.cUrlRemota );
     }
 
     private boolean uploadServerAndUpd(File fLocal, TFormObjetoMigra formRemoto) throws SQLException {
         // Sube al servidor
-        Map<String, Object> mapForm = this.migraMgr.upload( fLocal, formRemoto );
+        Map<String, Object> mapForm = this.migraFrwk.upload( fLocal, formRemoto );
 
         // Verifica retorno
         if ((Boolean) mapForm.get( "success" )) {
@@ -118,7 +118,7 @@ public class Sincroniza {
         String cIdForm = getRutaRelativa( fLocal.getPath() );
         TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm( cIdForm );
         if (formRemoto == null)
-            formRemoto = migraMgr.getFormByCIdForm( cIdForm );
+            formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
 
         dialogo.setRespuesta( DlgOpSync.DLG_COMMIT );
         if (formRemoto == null) {
@@ -189,7 +189,7 @@ public class Sincroniza {
 
         // V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
         String cIdForm = getRutaRelativa( fLocal.getPath() );
-        TFormObjetoMigra formRemoto = migraMgr.getFormByCIdForm( cIdForm );
+        TFormObjetoMigra formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
         // NO existe en sevidor remoto, no se hace nada, porque ya està borrado
         if (formRemoto == null)
             return;
@@ -201,7 +201,7 @@ public class Sincroniza {
         if (dialogo.getRespuesta() == DlgOpSync.DLG_COMMIT) {
             // Verifica si existe el archivo local en la base local
             this.formObjetoLocalDao.deleteByCIdForm( cIdForm );
-            this.migraMgr.remove( formRemoto );
+            this.migraFrwk.remove( formRemoto );
         }
     }
 
@@ -212,7 +212,7 @@ public class Sincroniza {
 
         // V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
         String cIdForm = getRutaRelativa( fLocal.getPath() );
-        TFormObjetoMigra formRemoto = migraMgr.getFormByCIdForm( cIdForm );
+        TFormObjetoMigra formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
         TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm( cIdForm );
         dialogo.setRespuesta( DlgOpSync.DLG_COMMIT );
         if (frmLocal == null) {
@@ -504,7 +504,7 @@ public class Sincroniza {
             // Verifica si existe el archivo local en la base local
             this.formObjetoLocalDao.deleteByCIdForm( formRemoto.getcIdForm() );
 
-            this.migraMgr.remove( formRemoto );
+            this.migraFrwk.remove( formRemoto );
             return true;
         }
         return true;
@@ -584,13 +584,14 @@ public class Sincroniza {
                 return false;
             if (nResp == JOptionPane.CANCEL_OPTION)
                 throw new FrameworkException( "Sincronización cancelada por el usuario" );
-            // try {
-            this.migraMgr.updateTpForm( cExt );
-            // } catch (FrameworkException e) {
-            // logger.error( "No se pudo crear la extensión del archivo:" + cArch, e );
-            // JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
-            // return false;
-            // }
+            try {
+                this.migraFrwk.updateTpForm( cExt );
+            } catch (FrameworkException e) {
+                logger.error( "No se pudo crear la extensión del archivo:" + cArch, e );
+                JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+                return false;
+            }
+            NombreArchivo.setLisTpForm( this.migraFrwk.getAllTpForm() );            
         }
         // Todo OK
         return true;
@@ -616,7 +617,7 @@ public class Sincroniza {
 
         // Lee formularios desde el servidor
         List<TFormObjetoMigra> lisFormSite;
-        lisFormSite = this.migraMgr.getListForm();
+        lisFormSite = this.migraFrwk.getListForm();
         Collections.sort( lisFormSite );
 
         // Parea los arreglos lisFileLocal y lisFormSite, comparando por 'Nombre

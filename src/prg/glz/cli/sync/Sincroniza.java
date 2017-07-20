@@ -591,7 +591,7 @@ public class Sincroniza {
                 JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                 return false;
             }
-            NombreArchivo.setLisTpForm( this.migraFrwk.getAllTpForm() );            
+            NombreArchivo.setLisTpForm( this.migraFrwk.getAllTpForm() );
         }
         // Todo OK
         return true;

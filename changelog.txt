@@ -3,6 +3,8 @@
  * Lista de extensiones a omitir
   
 = v4000 =
+@ 27/07/2017
+ * Fecha a UTC-0
 @ 19/07/2017
  * Inicio versión 4
 

@@ -1,6 +1,7 @@
 package prg.glz.cli;
 
 import java.security.SecureRandom;
+import java.util.TimeZone;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -44,8 +45,10 @@ public class Principal {
             throw new ExceptionInInitializerError( e );
         }
     }
-    
+
     public static void main(String[] args) {
+        TimeZone.setDefault( TimeZone.getTimeZone( "UTC-0" ) );
+
         try {
             String cClassLook = null;
             // Define apariencia

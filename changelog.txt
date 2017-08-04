@@ -3,6 +3,8 @@
  * Lista de extensiones a omitir
   
 = v4000 =
+@ 03/08/2017
+ * Windows Separador de Directorios
 @ 27/07/2017
  * Fecha a UTC-0
 @ 19/07/2017

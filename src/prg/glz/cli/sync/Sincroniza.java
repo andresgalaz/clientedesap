@@ -61,8 +61,8 @@ public class Sincroniza {
         this.cUrlRemota = cUrl;
         this.dialogo = dialogo;
 
-        if (cDir.charAt( cDir.length() - 1 ) != '/')
-            cDir += '/';
+        if (cDir.charAt( cDir.length() - 1 ) != File.separatorChar)
+            cDir += File.separatorChar;
         this.dirLocal = cDir;
         init();
     }
@@ -95,8 +95,7 @@ public class Sincroniza {
                 // V3.0: String cIdForm =
                 // ConvertFile.sinExtension(fLocal.getName());
                 String cIdForm = getRutaRelativa( fLocal.getPath() );
-                logger.warn( "No se pudo convertir TMODIF al actualizar el formulario" + cIdForm + "\nTMODIF="
-                        + mapForm.get( "TMODIF" ), e );
+                logger.warn( "No se pudo convertir TMODIF al actualizar el formulario" + cIdForm + "\nTMODIF=" + mapForm.get( "TMODIF" ), e );
             }
 
             formObjetoLocalDao.update( formRemoto );
@@ -115,7 +114,7 @@ public class Sincroniza {
         if (!verificaTpArchivo( cLocal ))
             return true;
 
-        String cIdForm = getRutaRelativa( fLocal.getPath() );
+        String cIdForm = fixUnixPath( getRutaRelativa( fLocal.getPath() ) );
         TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm( cIdForm );
         if (formRemoto == null)
             formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
@@ -188,7 +187,7 @@ public class Sincroniza {
         // return;
 
         // V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
-        String cIdForm = getRutaRelativa( fLocal.getPath() );
+        String cIdForm = fixUnixPath( getRutaRelativa( fLocal.getPath() ) );
         TFormObjetoMigra formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
         // NO existe en sevidor remoto, no se hace nada, porque ya està borrado
         if (formRemoto == null)
@@ -211,7 +210,7 @@ public class Sincroniza {
             return;
 
         // V3.0: String cIdForm = ConvertFile.sinExtension(fLocal.getName());
-        String cIdForm = getRutaRelativa( fLocal.getPath() );
+        String cIdForm = fixUnixPath( getRutaRelativa( fLocal.getPath() ) );
         TFormObjetoMigra formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
         TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm( cIdForm );
         dialogo.setRespuesta( DlgOpSync.DLG_COMMIT );
@@ -302,7 +301,7 @@ public class Sincroniza {
         if (!verificaTpArchivo( cArchLocal ))
             return true;
 
-        String cIdForm = getRutaRelativa( fLocal.getPath() );
+        String cIdForm = fixUnixPath( getRutaRelativa( fLocal.getPath() ) );
         dialogo.setRespuesta( 0 );
         dialogo.commitNuevo( cArchLocal );
 
@@ -334,7 +333,7 @@ public class Sincroniza {
         // File fLocal = new File( this.dirLocal + formRemoto.getcIdForm() + "."
         // + TTpFormObjeto.getExtension(formRemoto.getfTpObjeto()));
         File fLocal = new File( this.dirLocal + formRemoto.getcIdForm() );
-        String cIdForm = getRutaRelativa( fLocal.getPath() );
+        String cIdForm = fixUnixPath( getRutaRelativa( fLocal.getPath() ) );
         FileOutputStream fo = null;
         try {
             // Se define por defacto que se va a actualizar
@@ -343,15 +342,10 @@ public class Sincroniza {
             // Lee estado archivo local
             TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm( formRemoto.getcIdForm() );
             /*
-             * if (frmLocal == null) { // Si el archivo está en el disco, pero
-             * no está en la base local, no se puede determinar fecha // tModif
-             * del archivo, la fecha en el disco no es del todo relevante por
-             * las diferencias de UTC, se // crea un frmLocal MOCK frmLocal =
-             * new TFormObjetoMigra(); // frmLocal.setpFormObjeto(
-             * formRemoto.getpFormObjeto() ); frmLocal.setcIdForm(
-             * formRemoto.getcIdForm() ); frmLocal.setfTpObjeto(
-             * formRemoto.getfTpObjeto() ); frmLocal.settModif( new Timestamp( 0
-             * ) ); }
+             * if (frmLocal == null) { // Si el archivo está en el disco, pero no está en la base local, no se puede determinar fecha // tModif del archivo, la fecha en el disco no
+             * es del todo relevante por las diferencias de UTC, se // crea un frmLocal MOCK frmLocal = new TFormObjetoMigra(); // frmLocal.setpFormObjeto(
+             * formRemoto.getpFormObjeto() ); frmLocal.setcIdForm( formRemoto.getcIdForm() ); frmLocal.setfTpObjeto( formRemoto.getfTpObjeto() ); frmLocal.settModif( new Timestamp(
+             * 0 ) ); }
              */
             // Decide si hacer commit o update del archivo
             if (frmLocal != null) {
@@ -540,8 +534,7 @@ public class Sincroniza {
 
     /**
      * <p>
-     * Trae los archivos desde el servidor al disco local. Sincroniza si hay
-     * cambios
+     * Trae los archivos desde el servidor al disco local. Sincroniza si hay cambios
      * </p>
      * 
      * @param cDir
@@ -563,8 +556,7 @@ public class Sincroniza {
 
     /**
      * <p>
-     * Verifica que la extensión del archivos sea válida y exista, y no se de las del tipo rechazadas. Da la opción de
-     * crear la extensionen caso que no exista.
+     * Verifica que la extensión del archivos sea válida y exista, y no se de las del tipo rechazadas. Da la opción de crear la extensionen caso que no exista.
      * </p>
      * 
      * @param cArch
@@ -724,9 +716,9 @@ public class Sincroniza {
         for (String nombreArch : new File( cDir ).list( NombreArchivo.filtro )) {
             String cNombreCompleto = cDir + nombreArch;
             if (new File( cNombreCompleto ).isDirectory())
-                leerDirRecursivo( cNombreCompleto + '/', lisFile );
+                leerDirRecursivo( cNombreCompleto + File.separator, lisFile );
             else
-                lisFile.add( getRutaRelativa( cNombreCompleto ) );
+                lisFile.add( fixUnixPath( getRutaRelativa( cNombreCompleto ) ) );
         }
         return lisFile;
         // V3.0
@@ -743,12 +735,18 @@ public class Sincroniza {
     }
 
     private String getRutaRelativa(String cArchivo) {
-        if (ConvertString.isEmpty( cArchivo ) || cArchivo.indexOf( '/' ) < 0)
+        if (ConvertString.isEmpty( cArchivo ) || cArchivo.indexOf( File.separatorChar ) < 0)
             return cArchivo;
 
         if (Parametro.getDir().regionMatches( 0, cArchivo, 0, Parametro.getDir().length() ))
             return cArchivo.substring( Parametro.getDir().length() + 1 );
         return cArchivo;
+    }
+
+    private String fixUnixPath(String cArchivo) {
+        if (cArchivo == null || cArchivo.indexOf( '\\' ) < 0)
+            return cArchivo;
+        return cArchivo.replaceAll( "\\\\", "/" );
     }
 
     private void buildRutaRelativa(String cArchivo) {

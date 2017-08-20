@@ -2,6 +2,7 @@ package prg.glz.cli.ws;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -9,6 +10,8 @@ import java.net.CookiePolicy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 
@@ -34,9 +37,28 @@ public class LoginFrwk extends AbstractFrwk {
             CookieHandler.setDefault( new CookieManager( null, CookiePolicy.ACCEPT_ALL ) );
 
             // Se llama a esta porque es método GET, se usa solo para recibir las COOKIES
-            URL url = new URL( super.getUrlServer() + "/do/estadoSesion" );
+            final String urlEstadoSesion = super.getUrlServer() + "/do/estadoSesion";
+            URL url = new URL( urlEstadoSesion );
             URLConnection con = url.openConnection();
             super.setCookies( con.getHeaderFields().get( "Set-Cookie" ) );
+
+            // Revisa el estado de la sesión cada 5 minutos
+            Timer timer = new Timer();
+            timer.schedule( new TimerTask() {
+                byte [] bResp = new byte[2048]; 
+                public void run() {
+                    try {
+                        URL url = new URL( urlEstadoSesion );
+                        URLConnection con = url.openConnection();
+                        InputStream in = con.getInputStream();
+                        int ln = in.read( bResp );
+                        logger.debug( new String(bResp,0,ln) );
+                        in.close();
+                    } catch (Exception e) {
+                        logger.error( "NO está logeado", e );
+                    }
+                }
+             }, 0, 5 * 60 * 1000);            
 
             // Con las COOKIES almacendas, se procede a hacer el login
             url = new URL( super.getUrlServer() + "/do/login" );

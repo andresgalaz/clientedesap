@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import org.apache.log4j.Logger;
+
 import prg.glz.FrameworkException;
 import prg.glz.cli.Principal;
 import prg.glz.cli.config.Constante;
@@ -31,6 +33,7 @@ import prg.glz.cli.ws.MigraFrwk;
 
 @SuppressWarnings("serial")
 public class PnParams extends JPanel {
+    private static Logger      logger              = Logger.getLogger( PnParams.class );
     private static final int   ESTADO_DESCONECTADO = 1;
     private static final int   ESTADO_CONECTADO    = 2;
     private static final int   ESTADO_CORRIENDO    = 4;
@@ -44,6 +47,8 @@ public class PnParams extends JPanel {
 
     // Objetos accesibles del panel
     private int                nEstado             = ESTADO_DESCONECTADO;
+    private LoginFrwk          login;
+
     public static FrmPrincipal frmPrincipal;
     private DlgOpSync          dlgOpcionSync;
     private JTextField         txServer;
@@ -152,9 +157,9 @@ public class PnParams extends JPanel {
                 public void actionPerformed(ActionEvent arg0) {
                     try {
                         lbUsuarioNombre.setText( "No conectado" );
+                        login = new LoginFrwk( txServer.getText() );
 
                         // Conecta y pone el usuario como global
-                        LoginFrwk login = new LoginFrwk( txServer.getText() );
                         Principal.usuario = login.login( txUsuario.getText(), new String( txPassword.getPassword() ) );
                         lbUsuarioNombre.setText( Principal.usuario.getcNombre() );
                         setEstado( ESTADO_CONECTADO );
@@ -322,6 +327,7 @@ public class PnParams extends JPanel {
                     try {
                         ejecDetiene();
                     } catch (Exception e) {
+                        logger.error( "Al detener", e );
                     }
                     lbUsuarioNombre.setText( "No conectado" );
                     Principal.usuario = null;
@@ -426,7 +432,14 @@ public class PnParams extends JPanel {
     }
 
     private void ejecDetiene() {
-        this.watchDir.detener();
+        if (this.watchDir != null)
+            this.watchDir.detener();
+        try {
+            this.login.logout();
+            this.login = null;
+        } catch (FrameworkException e) {
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+        }
         this.setEstado( ESTADO_CONECTADO );
     }
 

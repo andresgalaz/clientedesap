@@ -19,6 +19,8 @@ public class Parametro {
     private static String      password;
     private static String      passwordSave;
     private static ControlHSQL hsql;
+    // Diferencia Horaria
+    private static double      nHoraDif;
 
     static {
         if (servidor == null) {
@@ -117,5 +119,13 @@ public class Parametro {
 
     public static void setPasswordSave(String passwordSave) {
         Parametro.passwordSave = passwordSave;
+    }
+
+    public static double getHoraDif() {
+        return nHoraDif;
+    }
+
+    public static void setHoraDif(double nHoraDif) {
+        Parametro.nHoraDif = nHoraDif;
     }
 }

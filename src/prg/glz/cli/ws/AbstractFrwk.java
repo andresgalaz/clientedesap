@@ -15,44 +15,51 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
-import prg.glz.FrameworkException;
-
 public abstract class AbstractFrwk {
-    // private static Logger logger = Logger.getLogger( AbstractFrwk.class );
+    private static Logger logger = Logger.getLogger( AbstractFrwk.class );
 
-    private String       cUrlOrigen;
-    private List<String> cookies;
+    private String        cUrlOrigen;
+    private List<String>  cookies;
 
-    public AbstractFrwk(String cUrl) throws FrameworkException {
+    public AbstractFrwk(String cUrl) {
         /* Start of Fix */
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
-            public void checkClientTrusted(X509Certificate[] certs, String authType) { }
-            public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            }
 
         } };
 
         SSLContext sc;
         try {
-            sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-        } catch (Exception e) {
-            throw new FrameworkException(e);
-        }
-        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            sc = SSLContext.getInstance( "SSL" );
+            sc.init( null, trustAllCerts, new java.security.SecureRandom() );
+            HttpsURLConnection.setDefaultSSLSocketFactory( sc.getSocketFactory() );
 
-        // Create all-trusting host name verifier
-        HostnameVerifier allHostsValid = new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) { return true; }
-        };
-        // Install the all-trusting host verifier
-        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        /* End of the fix*/
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier( allHostsValid );
+        } catch (Exception e) {
+            logger.error( "Al iniciar SSL", e );
+        }
+        /* End of the fix */
         this.setUrlServer( cUrl );
-        // init();
+
     }
 
     // protected abstract void init() throws FrameworkException;

@@ -2,13 +2,14 @@ package prg.glz.cli.ws;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,14 +18,17 @@ import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
 import prg.glz.cli.Principal;
+import prg.glz.cli.config.Parametro;
 import prg.glz.data.entity.TUsuario;
 import prg.util.cnv.ConvertException;
 import prg.util.cnv.ConvertMap;
+import prg.util.cnv.ConvertTimestamp;
 
 public class LoginFrwk extends AbstractFrwk {
     private static Logger logger = Logger.getLogger( LoginFrwk.class );
+    private Timer         timer;
 
-    public LoginFrwk(String cUrl) throws FrameworkException {
+    public LoginFrwk(String cUrl) {
         super( cUrl );
     }
 
@@ -43,22 +47,29 @@ public class LoginFrwk extends AbstractFrwk {
             super.setCookies( con.getHeaderFields().get( "Set-Cookie" ) );
 
             // Revisa el estado de la sesión cada 5 minutos
-            Timer timer = new Timer();
+            timer = new Timer();
             timer.schedule( new TimerTask() {
-                byte [] bResp = new byte[2048]; 
                 public void run() {
                     try {
                         URL url = new URL( urlEstadoSesion );
                         URLConnection con = url.openConnection();
-                        InputStream in = con.getInputStream();
-                        int ln = in.read( bResp );
-                        logger.debug( new String(bResp,0,ln) );
-                        in.close();
+                        Map<String, Object> mResp = AbstractFrwk.getJsonMap( con.getInputStream() );
+                        logger.debug( mResp );
+
+                        // Hora de la BD
+                        Timestamp tsRemota = ConvertTimestamp.toTimestamp( mResp.get( "tSistema" ) );
+                        Timestamp tsLocal = new Timestamp( new Date().getTime() );
+                        // Diferencia Horaria
+                        long d = ConvertTimestamp.compareTo( tsLocal, tsRemota );
+                        // Se redondea por si hay algunos segundos de diferencia
+                        double n = d / 3600.0 / 1000.0;
+                        n = Math.round( n * 10 ) / 10.0;
+                        Parametro.setHoraDif( n );
                     } catch (Exception e) {
                         logger.error( "NO está logeado", e );
                     }
                 }
-             }, 0, 5 * 60 * 1000);            
+            }, 0, 5 * 60 * 1000 );
 
             // Con las COOKIES almacendas, se procede a hacer el login
             url = new URL( super.getUrlServer() + "/do/login" );
@@ -92,6 +103,12 @@ public class LoginFrwk extends AbstractFrwk {
             logger.error( "Al conectar al sitio " + super.getUrlServer(), e );
             throw new FrameworkException( "No se pudo abrir " + super.getUrlServer() + "\n", e );
         }
+    }
+
+    public void logout() throws FrameworkException {
+        timer.cancel();
+        timer.purge();
+        timer = null;
     }
 
     public boolean isConnected() throws FrameworkException {

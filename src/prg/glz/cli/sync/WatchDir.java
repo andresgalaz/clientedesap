@@ -176,11 +176,12 @@ public class WatchDir implements Runnable {
                 Path child = dir.resolve( name );
                 File fileChild = child.toFile();
 
-                if (fileChild.isDirectory()) {
+                if (fileChild.isDirectory() && kind == ENTRY_CREATE) {
                     logger.info( fileChild.toString() );
                     // Agrega directorio a WhatchDir
                     try {
-                        registerAll( this.dirRaiz );
+                        // registerAll( this.dirRaiz );
+                        registerAll( child );
                     } catch (IOException e) {
                         logger.error( "Al volver a registrar el directorio:" + this.dirRaiz, e );
                     }
@@ -194,7 +195,8 @@ public class WatchDir implements Runnable {
                 } catch (FrameworkException ex) {
                     continue;
                 }
-
+                logger.debug( fileChild.toString() + ":" +
+                        (kind == ENTRY_MODIFY ? "ENTRY_MODIFY" : (kind == ENTRY_DELETE ? "ENTRY_DELETE" : (kind == ENTRY_CREATE ? "ENTRY_CREATE" : "kind=" + kind))) );
                 if (kind == ENTRY_MODIFY) {
                     // Se controla que el evento no este duplicado
                     // if (fileChild.lastModified() - lastModif > 100) {
@@ -256,8 +258,7 @@ public class WatchDir implements Runnable {
 
     /**
      * <p>
-     * Esta clase es Runnable, esto permite ser utilizado dentro de un hilo (Thread). Esto se hace necesari porque el
-     * método proccesEvents tiene un ciclo sin fin
+     * Esta clase es Runnable, esto permite ser utilizado dentro de un hilo (Thread). Esto se hace necesari porque el método proccesEvents tiene un ciclo sin fin
      * </p>
      */
     @Override

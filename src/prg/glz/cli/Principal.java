@@ -1,7 +1,6 @@
 package prg.glz.cli;
 
 import java.security.SecureRandom;
-import java.util.TimeZone;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -22,19 +21,19 @@ public class Principal {
     // Permite usar HTTPS sin bajar el certificado localmente
     {
         TrustManager[] trustAllCertificates = new TrustManager[] {
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                        // No need to implement.
-                    }
-
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                        // No need to implement.
-                    }
+            new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
                 }
+
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                    // No need to implement.
+                }
+
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                    // No need to implement.
+                }
+            }
         };
 
         try {
@@ -47,8 +46,6 @@ public class Principal {
     }
 
     public static void main(String[] args) {
-        TimeZone.setDefault( TimeZone.getTimeZone( "UTC-0" ) );
-
         try {
             String cClassLook = null;
             // Define apariencia

@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/jackson-mapper-asl-1.9.9.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.9.jar"/>
 	<classpathentry kind="lib" path="lib/utilFrmwk_4.0.jar"/>
+	<classpathentry kind="lib" path="lib/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

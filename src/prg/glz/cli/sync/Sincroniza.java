@@ -178,6 +178,11 @@ public class Sincroniza {
     }
 
     public void deleteFile(File fLocal) throws FrameworkException, SQLException {
+        // wait
+        try {
+            Thread.sleep( 100 );
+        } catch (InterruptedException e) {
+        }
         // Si el archivo existe
         if (fLocal == null || fLocal.exists())
             return;

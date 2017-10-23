@@ -135,7 +135,7 @@ public class FrmPrincipal extends JFrame {
         // Armado de paneles
         {
             // North : Panel Parámetros y/o Configuración
-            PnParams params = new PnParams( this );
+            PnParamsOld params = new PnParamsOld( this );
             this.add( params, BorderLayout.CENTER );
         }
     }

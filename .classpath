@@ -8,5 +8,7 @@
 	<classpathentry kind="lib" path="lib/jackson-core-asl-1.9.9.jar"/>
 	<classpathentry kind="lib" path="lib/utilFrmwk_4.0.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
+	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
+	<classpathentry kind="lib" path="jgoodies-forms-1.8.0.jar" sourcepath="jgoodies-forms-1.8.0-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

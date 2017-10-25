@@ -21,7 +21,7 @@ import prg.glz.FrameworkException;
 import prg.glz.cli.config.Parametro;
 import prg.glz.cli.db.ControlHSQL;
 import prg.glz.cli.frm.DlgOpSync;
-import prg.glz.cli.frm.PnParams;
+import prg.glz.cli.frm.PnParamsOld;
 import prg.glz.cli.ws.MigraFrwk;
 import prg.glz.data.dao.TFormObjectMigraDAO;
 import prg.glz.data.entity.TFormObjetoMigra;
@@ -576,7 +576,7 @@ public class Sincroniza {
         if (nArchivoOK == NombreArchivo.TP_ARCHIVO_NOEXISTE) {
             String cExt = ConvertFile.extension( cArch ).toLowerCase();
             // No existe extensión, pregunta si desea crearla
-            int nResp = JOptionPane.showConfirmDialog( PnParams.frmPrincipal, "Tipo de archivo con extensión (" + cExt + "), no existe.\n¿Desea crear esta extensión?" );
+            int nResp = JOptionPane.showConfirmDialog( PnParamsOld.frmPrincipal, "Tipo de archivo con extensión (" + cExt + "), no existe.\n¿Desea crear esta extensión?" );
             if (nResp == JOptionPane.NO_OPTION)
                 return false;
             if (nResp == JOptionPane.CANCEL_OPTION)
@@ -585,7 +585,7 @@ public class Sincroniza {
                 this.migraFrwk.updateTpForm( cExt );
             } catch (FrameworkException e) {
                 logger.error( "No se pudo crear la extensión del archivo:" + cArch, e );
-                JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+                JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
                 return false;
             }
             NombreArchivo.setLisTpForm( this.migraFrwk.getAllTpForm() );

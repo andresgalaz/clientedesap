@@ -32,8 +32,8 @@ import prg.glz.cli.ws.LoginFrwk;
 import prg.glz.cli.ws.MigraFrwk;
 
 @SuppressWarnings("serial")
-public class PnParams extends JPanel {
-    private static Logger      logger              = Logger.getLogger( PnParams.class );
+public class PnParamsOld extends JPanel {
+    private static Logger      logger              = Logger.getLogger( PnParamsOld.class );
     private static final int   ESTADO_DESCONECTADO = 1;
     private static final int   ESTADO_CONECTADO    = 2;
     private static final int   ESTADO_CORRIENDO    = 4;
@@ -70,8 +70,8 @@ public class PnParams extends JPanel {
     // Busca cambios de archivos y dispara sincronizador
     private WatchDir           watchDir;
 
-    public PnParams(FrmPrincipal frmPadre) {
-        PnParams.frmPrincipal = frmPadre;
+    public PnParamsOld(FrmPrincipal frmPadre) {
+        PnParamsOld.frmPrincipal = frmPadre;
         init();
         // Se utiliza para interactuar al momento de sincronizar archivos
         this.dlgOpcionSync = new DlgOpSync( frmPadre, "Sincroniza Archivos", true );
@@ -168,12 +168,12 @@ public class PnParams extends JPanel {
                         ejecGrabaParams();
 
                         if (!login.isConnected())
-                            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "La sesión está cerrada" );
+                            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "La sesión está cerrada" );
 
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
                     } catch (Exception e) {
-                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, "Error inesperado\n" + e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "Error inesperado\n" + e.getMessage() );
                     }
                     // Habilita componentes seg{un estado
                 }
@@ -215,7 +215,7 @@ public class PnParams extends JPanel {
                     } catch (Exception e) {
                     }
                     // Si seleccionó
-                    if (fcDir.showOpenDialog( PnParams.frmPrincipal ) == 0) {
+                    if (fcDir.showOpenDialog( PnParamsOld.frmPrincipal ) == 0) {
                         txDir.setText( fcDir.getSelectedFile().getPath() );
                         ejecGrabaParams();
                     }
@@ -244,7 +244,7 @@ public class PnParams extends JPanel {
                     try {
                         NombreArchivo.setLisTpForm( new MigraFrwk( txServer.getText() ).getAllTpForm() );
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
                         return;
                     }
                     ejecSyncCommit();
@@ -263,7 +263,7 @@ public class PnParams extends JPanel {
                     try {
                         NombreArchivo.setLisTpForm( new MigraFrwk( txServer.getText() ).getAllTpForm() );
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
                         return;
                     }
                     ejecSyncUpdate();
@@ -293,7 +293,7 @@ public class PnParams extends JPanel {
                     try {
                         NombreArchivo.setLisTpForm( new MigraFrwk( txServer.getText() ).getAllTpForm() );
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
                         return;
                     }
                     setEstado( ESTADO_CORRIENDO );
@@ -310,7 +310,7 @@ public class PnParams extends JPanel {
             buDetener.addActionListener( new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    setEstado( PnParams.ESTADO_CONECTADO );
+                    setEstado( PnParamsOld.ESTADO_CONECTADO );
                     ejecDetiene();
                 }
             } );
@@ -360,9 +360,9 @@ public class PnParams extends JPanel {
         try {
             frmWork = new Sincroniza( txServer.getText(), txDir.getText(), this.dlgOpcionSync );
             int nFiles = frmWork.syncCommit();
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
         } catch (FrameworkException | SQLException e) {
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
                     "Problemas al traer formularios desde el Servidor WEB\n" + e.getMessage() );
         } finally {
             frmPrincipal.setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
@@ -377,9 +377,9 @@ public class PnParams extends JPanel {
         try {
             frmWork = new Sincroniza( txServer.getText(), txDir.getText(), this.dlgOpcionSync );
             int nFiles = frmWork.syncUpdate();
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
         } catch (FrameworkException | SQLException e) {
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
                     "Problemas al traer formularios desde el Servidor WEB\n" + e.getMessage() );
         } finally {
             frmPrincipal.setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
@@ -399,7 +399,7 @@ public class PnParams extends JPanel {
         try {
             new Parametro().graba();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "No se pudo grabar parámetros\n" + e.getMessage() );
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "No se pudo grabar parámetros\n" + e.getMessage() );
             return;
         }
     }
@@ -410,7 +410,7 @@ public class PnParams extends JPanel {
         try {
             frmWork = new Sincroniza( txServer.getText(), txDir.getText(), this.dlgOpcionSync );
         } catch (FrameworkException e) {
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
                     "Problemas al traer formularios desde el Servidor WEB\n" + e.getMessage() );
             setEstado( ESTADO_CONECTADO );
             return;
@@ -425,7 +425,7 @@ public class PnParams extends JPanel {
             // Hilo (ver método run de WatchDir)
             new Thread( this.watchDir ).start();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
                     "No se pudo arrancar el servicio de sincronización\n" + e.getMessage() );
             return;
         }
@@ -438,7 +438,7 @@ public class PnParams extends JPanel {
             this.login.logout();
             this.login = null;
         } catch (FrameworkException e) {
-            JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
+            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
         }
         this.setEstado( ESTADO_CONECTADO );
     }

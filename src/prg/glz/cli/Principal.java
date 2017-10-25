@@ -11,7 +11,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.apache.log4j.Logger;
 
-import prg.glz.cli.frm.DlgExtension;
 import prg.glz.cli.frm.FrmPrincipal;
 import prg.glz.data.entity.TUsuario;
 
@@ -53,14 +52,14 @@ public class Principal {
             // Linux : Metal, Nimbus, CDE/Motif, GTK+
             // Windows : Metal, Nimbus, CDE/Motif, Windows, Windows Classic
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Windows-x".equals( info.getName() )) {
+                if ("Windows".equals( info.getName() )) {
                     cClassLook = info.getClassName();
                     break;
                 }
             }
             if (cClassLook == null) {
                 for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                    if ("GTK+x".equals( info.getName() )) {
+                    if ("GTK+".equals( info.getName() )) {
                         cClassLook = info.getClassName();
                         break;
                     }
@@ -80,6 +79,6 @@ public class Principal {
             logger.warn( "No se pudo configurar apariencia", e );
         }
         new FrmPrincipal();
-        new DlgExtension().setVisible( true );
+        // new DlgExtension().setVisible( true );
     }
 }

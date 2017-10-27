@@ -1,26 +1,28 @@
 package prg.glz.cli.frm;
 
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import javax.swing.JLabel;
 import java.awt.Font;
-import javax.swing.JTextField;
-import javax.swing.JCheckBox;
+
 import javax.swing.JButton;
-import javax.swing.UIManager;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
-import java.awt.FlowLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import net.miginfocom.swing.MigLayout;
+import javax.swing.JTextField;
 import javax.swing.JTree;
-import java.awt.GridLayout;
-import java.awt.Color;
+import javax.swing.UIManager;
 
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
+
+import net.miginfocom.swing.MigLayout;
+
+@SuppressWarnings("serial")
 public class PanParams extends JPanel {
     private JTextField textField;
     private JTextField textField_1;

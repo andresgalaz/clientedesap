@@ -15,6 +15,7 @@ import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 
@@ -136,7 +137,14 @@ public class FrmPrincipal extends JFrame {
         {
             // North : Panel Parámetros y/o Configuración
             PnParamsOld params = new PnParamsOld( this );
-            this.add( params, BorderLayout.CENTER );
+            PanParams params2 = new PanParams();
+//            this.add( params, BorderLayout.CENTER );
+//            this.add( params2, BorderLayout.WEST );
+            JSplitPane pane = new JSplitPane( JSplitPane.VERTICAL_SPLIT, 
+                    params, params2);
+            pane.setDividerLocation( 100 );
+            this.add(pane,BorderLayout.CENTER);
+            
         }
     }
 

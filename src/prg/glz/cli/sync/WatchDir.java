@@ -127,9 +127,11 @@ public class WatchDir implements Runnable {
         Files.walkFileTree( start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                    throws IOException {
-                if (dir.toString().equals( WatchDir.this.sincroniza.getHsql().getDatabaseDir() ))
+                    throws IOException {               
+                if ( dir.getFileName().toString().charAt( 0 ) == '.')
                     return FileVisitResult.SKIP_SUBTREE;
+//                if (dir.toString().equals( WatchDir.this.sincroniza.getHsql().getDatabaseDir() ))
+//                    return FileVisitResult.SKIP_SUBTREE;
                 register( dir );
                 return FileVisitResult.CONTINUE;
             }

@@ -127,11 +127,11 @@ public class WatchDir implements Runnable {
         Files.walkFileTree( start, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                    throws IOException {               
-                if ( dir.getFileName().toString().charAt( 0 ) == '.')
+                    throws IOException {
+                if (dir.getFileName().toString().charAt( 0 ) == '.')
                     return FileVisitResult.SKIP_SUBTREE;
-//                if (dir.toString().equals( WatchDir.this.sincroniza.getHsql().getDatabaseDir() ))
-//                    return FileVisitResult.SKIP_SUBTREE;
+                // if (dir.toString().equals( WatchDir.this.sincroniza.getHsql().getDatabaseDir() ))
+                // return FileVisitResult.SKIP_SUBTREE;
                 register( dir );
                 return FileVisitResult.CONTINUE;
             }
@@ -199,6 +199,14 @@ public class WatchDir implements Runnable {
                 }
                 logger.debug( fileChild.toString() + ":" +
                         (kind == ENTRY_MODIFY ? "ENTRY_MODIFY" : (kind == ENTRY_DELETE ? "ENTRY_DELETE" : (kind == ENTRY_CREATE ? "ENTRY_CREATE" : "kind=" + kind))) );
+
+                // Se espera antes de verificar el estado del archivo, en algunos casos el archivo es borrado antes de
+                // ser actualizado, otros quedan vacíos previos a ser actualizados, esas dos condiciones generan
+                // problemas al momento de sicronizar
+                try {
+                    Thread.sleep( 180 );
+                } catch (InterruptedException e) {
+                }
                 if (kind == ENTRY_MODIFY) {
                     // Se controla que el evento no este duplicado
                     // if (fileChild.lastModified() - lastModif > 100) {
@@ -260,7 +268,8 @@ public class WatchDir implements Runnable {
 
     /**
      * <p>
-     * Esta clase es Runnable, esto permite ser utilizado dentro de un hilo (Thread). Esto se hace necesari porque el método proccesEvents tiene un ciclo sin fin
+     * Esta clase es Runnable, esto permite ser utilizado dentro de un hilo (Thread). Esto se hace necesari porque el
+     * método proccesEvents tiene un ciclo sin fin
      * </p>
      */
     @Override

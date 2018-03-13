@@ -125,9 +125,12 @@ public class MigraFrwk extends AbstractFrwk {
                 out.write( ("prm_cIdForm=" + cIdForm).getBytes( "UTF-8" ) );
                 out.close();
             }
+            logger.debug( "Respuesta desde el servidor" );
             in = new ObjectInputStream( con.getInputStream() );
 
+            logger.debug( "Inicio des-serialización" );
             Object obj = in.readObject();
+            logger.debug( "Fin des-serialización" );
             return (List<TFormObjetoMigra>) obj;
         } catch (IOException e) {
             String cMsg;

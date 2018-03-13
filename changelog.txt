@@ -1,7 +1,11 @@
 = Pendiente
  * Selección Rutas a sincronizar
  * Lista de extensiones a omitir
-  
+
+= v4001 =
+@ 12/03/2018
+ * Se cambia la espera a 180 milisegundos en Watchdir y se saca del sincronizador
+   
 = v4000 =
 @ 13/10/2017
  * Tiempo se espera al detectar eliminación, algunos editores como VI hacen eso

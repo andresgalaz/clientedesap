@@ -3,6 +3,8 @@
  * Lista de extensiones a omitir
 
 = v4001 =
+@ 19/03/2018
+ * Se verifica si login está distinto de nulo
 @ 12/03/2018
  * Se cambia la espera a 180 milisegundos en Watchdir y se saca del sincronizador
    

@@ -435,8 +435,10 @@ public class PnParamsOld extends JPanel {
         if (this.watchDir != null)
             this.watchDir.detener();
         try {
-            this.login.logout();
-            this.login = null;
+            if (this.login != null) {
+                this.login.logout();
+                this.login = null;
+            }
         } catch (FrameworkException e) {
             JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
         }

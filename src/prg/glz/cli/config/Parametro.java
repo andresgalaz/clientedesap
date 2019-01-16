@@ -18,6 +18,7 @@ public class Parametro {
     private static String      usuario;
     private static String      password;
     private static String      passwordSave;
+    private static String      md5Diff;
     private static ControlHSQL hsql;
     // Diferencia Horaria
     private static double      nHoraDif;
@@ -58,6 +59,7 @@ public class Parametro {
         usuario = props.getProperty( "usuario", "" );
         password = props.getProperty( "password", "" );
         passwordSave = props.getProperty( "passwordSave", "0" );
+        md5Diff = props.getProperty( "md5Diff", "0" );
         dir = props.getProperty( "dir", "" );
     }
 
@@ -67,6 +69,7 @@ public class Parametro {
         props.setProperty( "usuario", usuario == null ? "" : usuario );
         props.setProperty( "password", password == null ? "" : password );
         props.setProperty( "passwordSave", passwordSave == null ? "0" : passwordSave );
+        props.setProperty( "md5Diff", md5Diff == null ? "0" : md5Diff );
         props.setProperty( "dir", dir == null ? "" : dir );
         File f = new File( SERVER_PROPS_NAME );
         OutputStream out = new FileOutputStream( f );
@@ -121,6 +124,14 @@ public class Parametro {
         Parametro.passwordSave = passwordSave;
     }
 
+    public static String getMd5Diff() {
+        return md5Diff;
+    }
+
+    public static void setMd5Diff(String md5Diff) {
+        Parametro.md5Diff = md5Diff;
+    }
+
     public static double getHoraDif() {
         return nHoraDif;
     }
@@ -128,4 +139,5 @@ public class Parametro {
     public static void setHoraDif(double nHoraDif) {
         Parametro.nHoraDif = nHoraDif;
     }
+
 }

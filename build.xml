@@ -3,18 +3,18 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="C:/workspace/clienteDesap_4.0/clienteDesap_4.1.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="clienteDesap_4.1a.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="prg.glz.cli.Principal"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="C:/workspace/clienteDesap_4.0/bin"/>
-            <fileset dir="C:/workspace/clienteDesap_4.0/src"/>
+            <fileset dir="bin"/>
+            <fileset dir="src"/>
             <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/log4j-1.2.13.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/hsqldb.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/jackson-mapper-asl-1.9.9.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/jackson-core-asl-1.9.9.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/utilFrmwk_4.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/utilFrmwk_4.0e.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="C:/workspace/clienteDesap_4.0/lib/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
         </jar>
     </target>

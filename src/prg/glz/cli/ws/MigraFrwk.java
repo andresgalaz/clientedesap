@@ -15,6 +15,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
+import prg.glz.cli.config.Parametro;
 import prg.glz.cli.sync.MultipartUtility;
 import prg.glz.data.entity.TFormObjetoMigra;
 import prg.glz.data.entity.TTpFormObjeto;
@@ -30,14 +31,14 @@ public class MigraFrwk extends AbstractFrwk {
     }
 
     public TFormObjetoMigra getFormByCIdForm(String cIdForm) throws FrameworkException {
-        List<TFormObjetoMigra> lis = getListForm( cIdForm );
+        List<TFormObjetoMigra> lis = getListForm( false, cIdForm );
         if (lis == null || lis.size() == 0)
             return null;
         return lis.get( 0 );
     }
 
     public List<TFormObjetoMigra> getListForm() throws FrameworkException {
-        return getListForm( null );
+        return getListForm( "1".equals( Parametro.getMd5Diff() ), null );
     }
 
     /**
@@ -114,18 +115,19 @@ public class MigraFrwk extends AbstractFrwk {
     }
 
     @SuppressWarnings("unchecked")
-    private List<TFormObjetoMigra> getListForm(String cIdForm) throws FrameworkException {
+    private List<TFormObjetoMigra> getListForm(boolean bMd5, String cIdForm) throws FrameworkException {
         ObjectInput in = null;
         try {
             URLConnection con = new URL( super.getUrlServer() + "/do/formMigraEnvia" ).openConnection();
             super.sendHeader( con );
+            con.setDoOutput( true );
+            OutputStream out = con.getOutputStream();
+            out.write( ("prm_bMd5=" + bMd5).getBytes( "UTF-8" ) );
             if (!ConvertString.isEmpty( cIdForm )) {
-                con.setDoOutput( true );
-                OutputStream out = con.getOutputStream();
-                out.write( ("prm_cIdForm=" + cIdForm).getBytes( "UTF-8" ) );
-                out.close();
+                out.write( ("&prm_cIdForm=" + cIdForm).getBytes( "UTF-8" ) );
             }
-            logger.debug( "Respuesta desde el servidor" );
+            out.close();
+            logger.debug( "Envía petición al servidor" );
             in = new ObjectInputStream( con.getInputStream() );
 
             logger.debug( "Inicio des-serialización" );

@@ -32,8 +32,8 @@ import prg.glz.cli.ws.LoginFrwk;
 import prg.glz.cli.ws.MigraFrwk;
 
 @SuppressWarnings("serial")
-public class PnParamsOld extends JPanel {
-    private static Logger      logger              = Logger.getLogger( PnParamsOld.class );
+public class PnParams extends JPanel {
+    private static Logger      logger              = Logger.getLogger( PnParams.class );
     private static final int   ESTADO_DESCONECTADO = 1;
     private static final int   ESTADO_CONECTADO    = 2;
     private static final int   ESTADO_CORRIENDO    = 4;
@@ -56,6 +56,7 @@ public class PnParamsOld extends JPanel {
     private JLabel             lbUsuarioNombre;
     private JPasswordField     txPassword;
     private JCheckBox          chPasswordSave;
+    private JCheckBox          chMd5Diff;
     private JTextField         txDir;
     private JFileChooser       fcDir;
     private JButton            buConectar;
@@ -70,8 +71,8 @@ public class PnParamsOld extends JPanel {
     // Busca cambios de archivos y dispara sincronizador
     private WatchDir           watchDir;
 
-    public PnParamsOld(FrmPrincipal frmPadre) {
-        PnParamsOld.frmPrincipal = frmPadre;
+    public PnParams(FrmPrincipal frmPadre) {
+        PnParams.frmPrincipal = frmPadre;
         init();
         // Se utiliza para interactuar al momento de sincronizar archivos
         this.dlgOpcionSync = new DlgOpSync( frmPadre, "Sincroniza Archivos", true );
@@ -148,7 +149,7 @@ public class PnParamsOld extends JPanel {
             chPasswordSave.setBackground( new Color( 98, 175, 244 ) );
             this.add( chPasswordSave );
             nPosX += chPasswordSave.getWidth() + SEPARADOR_X;
-
+            
             // Botón Conecta
             buConectar = new JButton( "Conectar" );
             buConectar.setBounds( nPosX, nPosY, 120, SIZE_LINE );
@@ -168,17 +169,28 @@ public class PnParamsOld extends JPanel {
                         ejecGrabaParams();
 
                         if (!login.isConnected())
-                            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "La sesión está cerrada" );
+                            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "La sesión está cerrada" );
 
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                     } catch (Exception e) {
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "Error inesperado\n" + e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, "Error inesperado\n" + e.getMessage() );
                     }
                     // Habilita componentes seg{un estado
                 }
             } );
             this.add( buConectar );
+
+            nPosX = LEFT;
+            nPosX += lb.getWidth() + SEPARADOR_X;
+            nPosY += SIZE_LINE + SEPARADOR_Y;
+            String cMd5Diff = Parametro.getMd5Diff();
+            chMd5Diff = new JCheckBox( "Comparación Rápida" );
+            chMd5Diff.setForeground( Constante.COLOR_LABEL );
+            chMd5Diff.setBounds( nPosX, nPosY, 200, SIZE_LINE );
+            chMd5Diff.setSelected( "1".equals( cMd5Diff ) );
+            chMd5Diff.setBackground( new Color( 98, 175, 244 ) );
+            this.add( chMd5Diff );
         }
         nPosY += SIZE_LINE * 2 + SEPARADOR_Y;
         {
@@ -193,7 +205,6 @@ public class PnParamsOld extends JPanel {
 
             txDir = new JTextField( Parametro.getDir() );
             txDir.setBackground( Constante.COLOR_FONDO_TEXTO );
-            ;
             txDir.setBounds( nPosX, nPosY, 400, SIZE_LINE );
             this.add( txDir );
             nPosX += txDir.getWidth() + SEPARADOR_X;
@@ -215,7 +226,7 @@ public class PnParamsOld extends JPanel {
                     } catch (Exception e) {
                     }
                     // Si seleccionó
-                    if (fcDir.showOpenDialog( PnParamsOld.frmPrincipal ) == 0) {
+                    if (fcDir.showOpenDialog( PnParams.frmPrincipal ) == 0) {
                         txDir.setText( fcDir.getSelectedFile().getPath() );
                         ejecGrabaParams();
                     }
@@ -244,7 +255,7 @@ public class PnParamsOld extends JPanel {
                     try {
                         NombreArchivo.setLisTpForm( new MigraFrwk( txServer.getText() ).getAllTpForm() );
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                         return;
                     }
                     ejecSyncCommit();
@@ -263,7 +274,7 @@ public class PnParamsOld extends JPanel {
                     try {
                         NombreArchivo.setLisTpForm( new MigraFrwk( txServer.getText() ).getAllTpForm() );
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                         return;
                     }
                     ejecSyncUpdate();
@@ -293,7 +304,7 @@ public class PnParamsOld extends JPanel {
                     try {
                         NombreArchivo.setLisTpForm( new MigraFrwk( txServer.getText() ).getAllTpForm() );
                     } catch (FrameworkException e) {
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                         return;
                     }
                     setEstado( ESTADO_CORRIENDO );
@@ -310,7 +321,7 @@ public class PnParamsOld extends JPanel {
             buDetener.addActionListener( new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    setEstado( PnParamsOld.ESTADO_CONECTADO );
+                    setEstado( PnParams.ESTADO_CONECTADO );
                     ejecDetiene();
                 }
             } );
@@ -360,9 +371,9 @@ public class PnParamsOld extends JPanel {
         try {
             frmWork = new Sincroniza( txServer.getText(), txDir.getText(), this.dlgOpcionSync );
             int nFiles = frmWork.syncCommit();
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
         } catch (FrameworkException | SQLException e) {
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
                     "Problemas al traer formularios desde el Servidor WEB\n" + e.getMessage() );
         } finally {
             frmPrincipal.setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
@@ -377,9 +388,9 @@ public class PnParamsOld extends JPanel {
         try {
             frmWork = new Sincroniza( txServer.getText(), txDir.getText(), this.dlgOpcionSync );
             int nFiles = frmWork.syncUpdate();
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "Se procesaron " + nFiles + " archivos" );
         } catch (FrameworkException | SQLException e) {
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
                     "Problemas al traer formularios desde el Servidor WEB\n" + e.getMessage() );
         } finally {
             frmPrincipal.setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
@@ -392,14 +403,18 @@ public class PnParamsOld extends JPanel {
         Parametro.setDir( txDir.getText() );
         Parametro.setUsuario( txUsuario.getText() );
         Parametro.setPasswordSave( chPasswordSave.isSelected() ? "1" : "0" );
+        Parametro.setMd5Diff( chMd5Diff.isSelected() ? "1" : "0" );
+        
+        // Recupera o limpia campo password
         if (chPasswordSave.isSelected())
             Parametro.setPassword( new String( txPassword.getPassword() ) );
         else
             Parametro.setPassword( null );
+        
         try {
             new Parametro().graba();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, "No se pudo grabar parámetros\n" + e.getMessage() );
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal, "No se pudo grabar parámetros\n" + e.getMessage() );
             return;
         }
     }
@@ -410,7 +425,7 @@ public class PnParamsOld extends JPanel {
         try {
             frmWork = new Sincroniza( txServer.getText(), txDir.getText(), this.dlgOpcionSync );
         } catch (FrameworkException e) {
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
                     "Problemas al traer formularios desde el Servidor WEB\n" + e.getMessage() );
             setEstado( ESTADO_CONECTADO );
             return;
@@ -425,7 +440,7 @@ public class PnParamsOld extends JPanel {
             // Hilo (ver método run de WatchDir)
             new Thread( this.watchDir ).start();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal,
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal,
                     "No se pudo arrancar el servicio de sincronización\n" + e.getMessage() );
             return;
         }
@@ -440,7 +455,7 @@ public class PnParamsOld extends JPanel {
                 this.login = null;
             }
         } catch (FrameworkException e) {
-            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+            JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
         }
         this.setEstado( ESTADO_CONECTADO );
     }
@@ -451,6 +466,7 @@ public class PnParamsOld extends JPanel {
         txUsuario.setEnabled( (this.nEstado & ESTADO_DESCONECTADO) > 0 );
         txPassword.setEnabled( (this.nEstado & ESTADO_DESCONECTADO) > 0 );
         chPasswordSave.setEnabled( (this.nEstado & ESTADO_DESCONECTADO) > 0 );
+        chMd5Diff.setEnabled( (this.nEstado & ESTADO_DESCONECTADO) > 0 );
         buSelecc.setEnabled( (this.nEstado & ESTADO_DESCONECTADO) > 0 );
         buConectar.setEnabled( (this.nEstado & ESTADO_DESCONECTADO) > 0 );
 

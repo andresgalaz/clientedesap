@@ -61,7 +61,7 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 
 import prg.glz.FrameworkException;
-import prg.glz.cli.frm.PnParamsOld;
+import prg.glz.cli.frm.PnParams;
 
 /**
  * Example to watch a directory (or tree) for changes to files.
@@ -215,7 +215,7 @@ public class WatchDir implements Runnable {
                         this.sincroniza.syncFile( fileChild );
                     } catch (FrameworkException | SQLException e) {
                         logger.error( "No se pudo subir archivo:" + fileChild, e );
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                     }
                     // }
                 } else if (kind == ENTRY_DELETE) {
@@ -225,7 +225,7 @@ public class WatchDir implements Runnable {
                         this.sincroniza.deleteFile( fileChild );
                     } catch (FrameworkException | SQLException e) {
                         logger.error( "No se pudo subir archivo:" + fileChild, e );
-                        JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                        JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                     }
                 } else if (kind == ENTRY_CREATE) {
                     if (fileChild.isFile()) {
@@ -234,7 +234,7 @@ public class WatchDir implements Runnable {
                             this.sincroniza.syncFile( fileChild );
                         } catch (FrameworkException | SQLException e) {
                             logger.error( "No se pudo subir archivo:" + fileChild, e );
-                            JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                            JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                         }
                     } else {
                         // Si aparacen directorios, se agregan a los directorios

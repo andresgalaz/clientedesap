@@ -21,7 +21,7 @@ import prg.glz.FrameworkException;
 import prg.glz.cli.config.Parametro;
 import prg.glz.cli.db.ControlHSQL;
 import prg.glz.cli.frm.DlgOpSync;
-import prg.glz.cli.frm.PnParamsOld;
+import prg.glz.cli.frm.PnParams;
 import prg.glz.cli.ws.MigraFrwk;
 import prg.glz.data.dao.TFormObjectMigraDAO;
 import prg.glz.data.entity.TFormObjetoMigra;
@@ -29,6 +29,7 @@ import prg.util.cnv.ConvertException;
 import prg.util.cnv.ConvertFile;
 import prg.util.cnv.ConvertString;
 import prg.util.cnv.ConvertTimestamp;
+import prg.util.sec.ChecksumMD5;
 
 public class Sincroniza {
     private static Logger       logger     = Logger.getLogger( Sincroniza.class );
@@ -153,6 +154,11 @@ public class Sincroniza {
             return uploadServerAndUpd( fLocal, formRemoto );
         }
         if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
+            if ("1".equals( Parametro.getMd5Diff() )) {
+                // Dado que cFuente trajo ChecksumMD5 se necesita leer contenido real
+                formRemoto = migraFrwk.getFormByCIdForm( formRemoto.getcIdForm() );
+            }
+
             FileOutputStream fo = null;
             try {
                 fo = new FileOutputStream( fLocal );
@@ -268,6 +274,9 @@ public class Sincroniza {
                 // formObjetoLocalDao.deleteByCIdForm(ConvertFile.sinExtension(fLocal.getName()));
                 formObjetoLocalDao.deleteByCIdForm( cIdForm );
             } else {
+                // Dado que cFuente trajo ChecksumMD5 se necesita leer contenido real
+                formRemoto = migraFrwk.getFormByCIdForm( formRemoto.getcIdForm() );
+
                 FileOutputStream fo = null;
                 try {
                     fo = new FileOutputStream( fLocal );
@@ -355,12 +364,12 @@ public class Sincroniza {
                 // usuario puede solicitar COMMIT
                 long cmpTModif = ConvertTimestamp.compareTo( frmLocal.gettModif(), formRemoto.gettModif() );
                 if (cmpTModif > 0) {
-                    dialogo.cofirmaUpdate( cIdForm );
+                    dialogo.cofirmaUpdate( cIdForm, false );
                 } else if (cmpTModif == 0) {
                     if (isEqualCFuente( fLocal, formRemoto )) {
                         dialogo.setRespuesta( DlgOpSync.DLG_SALTAR );
                     } else {
-                        dialogo.cofirmaUpdate( cIdForm );
+                        dialogo.cofirmaUpdate( cIdForm, true );
                     }
                 }
             }
@@ -372,11 +381,16 @@ public class Sincroniza {
 
             // Actualiza archivo local
             if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
+                if ("1".equals( Parametro.getMd5Diff() )) {
+                    // Dado que cFuente trajo ChecksumMD5 se necesita leer contenido real
+                    formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
+                }
                 fo = new FileOutputStream( fLocal );
                 fo.write( formRemoto.getcFuente() );
                 fo.flush();
                 formObjetoLocalDao.deleteByCIdForm( formRemoto.getcIdForm() );
                 frmLocal = formRemoto.clone();
+                frmLocal.settModif( formRemoto.gettModif() );
                 frmLocal.setpFormObjeto( null );
                 formObjetoLocalDao.insert( frmLocal );
                 return true;
@@ -411,7 +425,10 @@ public class Sincroniza {
         try {
             // Verifica si existe el archivo local en la base local
             this.formObjetoLocalDao.deleteByCIdForm( formRemoto.getcIdForm() );
-
+            if ("1".equals( Parametro.getMd5Diff() )) {
+                // Dado que cFuente trajo ChecksumMD5 se necesita leer contenido real
+                formRemoto = migraFrwk.getFormByCIdForm( formRemoto.getcIdForm() );
+            }
             buildRutaRelativa( formRemoto.getcIdForm() );
 
             fo = new FileOutputStream( fLocal );
@@ -461,7 +478,7 @@ public class Sincroniza {
             } catch (Exception e2) {
             }
         }
-        return Arrays.equals( cFuenteLocal, frmRemoto.getcFuente() );
+        return Arrays.equals( ChecksumMD5.getByte( cFuenteLocal ), frmRemoto.getcFuente() );
     }
 
     private boolean eliminaRemoto(TFormObjetoMigra formRemoto) throws SQLException, FrameworkException {
@@ -571,7 +588,7 @@ public class Sincroniza {
         if (nArchivoOK == NombreArchivo.TP_ARCHIVO_NOEXISTE) {
             String cExt = ConvertFile.extension( cArch ).toLowerCase();
             // No existe extensión, pregunta si desea crearla
-            int nResp = JOptionPane.showConfirmDialog( PnParamsOld.frmPrincipal, "Tipo de archivo con extensión (" + cExt + "), no existe.\n¿Desea crear esta extensión?" );
+            int nResp = JOptionPane.showConfirmDialog( PnParams.frmPrincipal, "Tipo de archivo con extensión (" + cExt + "), no existe.\n¿Desea crear esta extensión?" );
             if (nResp == JOptionPane.NO_OPTION)
                 return false;
             if (nResp == JOptionPane.CANCEL_OPTION)
@@ -580,7 +597,7 @@ public class Sincroniza {
                 this.migraFrwk.updateTpForm( cExt );
             } catch (FrameworkException e) {
                 logger.error( "No se pudo crear la extensión del archivo:" + cArch, e );
-                JOptionPane.showMessageDialog( PnParamsOld.frmPrincipal, e.getMessage() );
+                JOptionPane.showMessageDialog( PnParams.frmPrincipal, e.getMessage() );
                 return false;
             }
             NombreArchivo.setLisTpForm( this.migraFrwk.getAllTpForm() );
@@ -626,7 +643,7 @@ public class Sincroniza {
             if (formRemoto == null)
                 formRemoto = itRemoto.next();
             int nComp = cLocal.compareTo( formRemoto.getcIdForm() );
-            logger.debug( "Comparando " + formRemoto.getcIdForm());
+            logger.debug( "Comparando " + formRemoto.getcIdForm() );
             /*
              * V3.0
              */

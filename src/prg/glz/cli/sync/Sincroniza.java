@@ -345,16 +345,17 @@ public class Sincroniza {
         String cIdForm = fixUnixPath( getRutaRelativa( fLocal.getPath() ) );
         FileOutputStream fo = null;
         try {
-            // Se define por defacto que se va a actualizar
+            // Se define por defecto que se va a actualizar
             dialogo.setRespuesta( DlgOpSync.DLG_UPDATE );
 
-            // Lee estado archivo local
+            // Lee estado archivo desde la BD local
             TFormObjetoMigra frmLocal = formObjetoLocalDao.getByCIdForm( formRemoto.getcIdForm() );
             /*
-             * if (frmLocal == null) { // Si el archivo está en el disco, pero no está en la base local, no se puede determinar fecha // tModif del archivo, la fecha en el disco no
-             * es del todo relevante por las diferencias de UTC, se // crea un frmLocal MOCK frmLocal = new TFormObjetoMigra(); // frmLocal.setpFormObjeto(
-             * formRemoto.getpFormObjeto() ); frmLocal.setcIdForm( formRemoto.getcIdForm() ); frmLocal.setfTpObjeto( formRemoto.getfTpObjeto() ); frmLocal.settModif( new Timestamp(
-             * 0 ) ); }
+             * if (frmLocal == null) { // Si el archivo está en el disco, pero no está en la base local, no se puede
+             * determinar fecha // tModif del archivo, la fecha en el disco no es del todo relevante por las diferencias
+             * de UTC, se // crea un frmLocal MOCK frmLocal = new TFormObjetoMigra(); // frmLocal.setpFormObjeto(
+             * formRemoto.getpFormObjeto() ); frmLocal.setcIdForm( formRemoto.getcIdForm() ); frmLocal.setfTpObjeto(
+             * formRemoto.getfTpObjeto() ); frmLocal.settModif( new Timestamp( 0 ) ); }
              */
             // Decide si hacer commit o update del archivo
             if (frmLocal != null) {
@@ -371,6 +372,9 @@ public class Sincroniza {
                     } else {
                         dialogo.cofirmaUpdate( cIdForm, true );
                     }
+                } else {
+                    if (isEqualCFuente( fLocal, formRemoto ))
+                        dialogo.setRespuesta( DlgOpSync.DLG_SALTAR );
                 }
             }
 
@@ -381,13 +385,17 @@ public class Sincroniza {
 
             // Actualiza archivo local
             if (dialogo.getRespuesta() == DlgOpSync.DLG_UPDATE) {
-                if ("1".equals( Parametro.getMd5Diff() )) {
-                    // Dado que cFuente trajo ChecksumMD5 se necesita leer contenido real
-                    formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
+                if (isEqualCFuente( fLocal, formRemoto )) {
+                    // Si el fuente es igual, solo se actuailiza la BD
+                } else {
+                    if ("1".equals( Parametro.getMd5Diff() )) {
+                        // Dado que cFuente trajo ChecksumMD5 se necesita leer contenido real
+                        formRemoto = migraFrwk.getFormByCIdForm( cIdForm );
+                    }
+                    fo = new FileOutputStream( fLocal );
+                    fo.write( formRemoto.getcFuente() );
+                    fo.flush();
                 }
-                fo = new FileOutputStream( fLocal );
-                fo.write( formRemoto.getcFuente() );
-                fo.flush();
                 formObjetoLocalDao.deleteByCIdForm( formRemoto.getcIdForm() );
                 frmLocal = formRemoto.clone();
                 frmLocal.settModif( formRemoto.gettModif() );
@@ -395,6 +403,7 @@ public class Sincroniza {
                 formObjetoLocalDao.insert( frmLocal );
                 return true;
             }
+
             // Actualiza archivo remoto
             if (dialogo.getRespuesta() == DlgOpSync.DLG_COMMIT)
                 return uploadServerAndUpd( fLocal, formRemoto );
@@ -573,7 +582,8 @@ public class Sincroniza {
 
     /**
      * <p>
-     * Verifica que la extensión del archivos sea válida y exista, y no se de las del tipo rechazadas. Da la opción de crear la extensionen caso que no exista.
+     * Verifica que la extensión del archivos sea válida y exista, y no se de las del tipo rechazadas. Da la opción de
+     * crear la extensionen caso que no exista.
      * </p>
      * 
      * @param cArch

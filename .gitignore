@@ -1,5 +1,7 @@
 /bin/
 /*.log
+/*.zip
+/zip/
 /server*.properties
 /test/
 /test4/

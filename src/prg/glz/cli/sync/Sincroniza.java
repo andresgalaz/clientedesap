@@ -487,7 +487,33 @@ public class Sincroniza {
             } catch (Exception e2) {
             }
         }
-        return Arrays.equals( ChecksumMD5.getByte( cFuenteLocal ), frmRemoto.getcFuente() );
+        boolean sinCambios = false;
+        if ("1".equals( Parametro.getMd5Diff() )) {
+            // Dado que cFuenteLocal no es ChecksumMD5 se necesita convertir para comparar
+            sinCambios = Arrays.equals( ChecksumMD5.getByte( cFuenteLocal ), frmRemoto.getcFuente() );
+        } else {
+            sinCambios = Arrays.equals( cFuenteLocal, frmRemoto.getcFuente() );
+        }
+        // DEPURACION
+        // if (!sinCambios) {
+        //
+        // try {
+        // String cName = frmRemoto.getcIdForm().replaceAll( "\\/", "_" );
+        // FileOutputStream fo = new FileOutputStream( new File( cName + "_L" ) );
+        // fo.write( cFuenteLocal );
+        // fo.flush();
+        // fo.close();
+        // fo = new FileOutputStream( new File( cName + "_R" ) );
+        // fo.write( frmRemoto.getcFuente() );
+        // fo.flush();
+        // fo.close();
+        // } catch (Exception e) {
+        // logger.error( e );
+        // }
+        // logger.debug( "Diferencia" );
+        // }
+
+        return sinCambios;
     }
 
     private boolean eliminaRemoto(TFormObjetoMigra formRemoto) throws SQLException, FrameworkException {

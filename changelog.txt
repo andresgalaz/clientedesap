@@ -2,6 +2,10 @@
  * Selección Rutas a sincronizar
  * Lista de extensiones a omitir
 
+= v4001b =
+@ 11/05/2019
+ * Se corrige comparación local para que compare correctamente las diferemcias
+   
 = v4001a =
 @ 15/01/2019
  * Se agrega CHECKSUM MD5, lo que agiliza la

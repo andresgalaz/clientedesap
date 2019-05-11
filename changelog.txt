@@ -2,9 +2,11 @@
  * Selección Rutas a sincronizar
  * Lista de extensiones a omitir
 
-= v4001 =
-@ 19/03/2018
- * Se verifica si login está distinto de nulo
+= v4001a =
+@ 15/01/2019
+ * Se agrega CHECKSUM MD5, lo que agiliza la
+   compraraciòn remota.
+   
 @ 12/03/2018
  * Se cambia la espera a 180 milisegundos en Watchdir y se saca del sincronizador
    

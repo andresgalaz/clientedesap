@@ -30,7 +30,7 @@ public class FrmPrincipal extends JFrame {
         try {
             init();
             this.setVisible( true );
-            this.setTitle( "Cliente Sicronización Framwork Web - Compustrom v4.1" );
+            this.setTitle( "Cliente Sicronización Framwork Web - Compustrom v4.1a" );
         } catch (Exception e) {
             logger.error( "No se pudo inicializar pantalla principal", e );
         }
@@ -40,7 +40,7 @@ public class FrmPrincipal extends JFrame {
         // Configura pantalla actual
         this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         this.setLayout( new BorderLayout() );
-        this.setBounds( 100, 100, 700, 310 );
+        this.setBounds( 100, 100, 700, 340 );
         // Carga icono
         this.setIconImage( new ImageIcon( this.getClass().getResource( "freefilesync4.png" ) ).getImage() );
         // Si hay soporte de iconos en barra de tareas
@@ -135,7 +135,7 @@ public class FrmPrincipal extends JFrame {
         // Armado de paneles
         {
             // North : Panel Parámetros y/o Configuración
-            PnParamsOld params = new PnParamsOld( this );
+            PnParams params = new PnParams( this );
             this.add( params, BorderLayout.CENTER );
         }
     }

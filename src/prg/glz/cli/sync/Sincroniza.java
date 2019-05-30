@@ -768,10 +768,14 @@ public class Sincroniza {
 
     private List<String> leerDirRecursivo(String cDir, List<String> lisFile) {
         for (String nombreArch : new File( cDir ).list( NombreArchivo.filtro )) {
+
+            if (".git".equals( nombreArch ))
+                continue;
+
             String cNombreCompleto = cDir + nombreArch;
-            if (new File( cNombreCompleto ).isDirectory())
+            if (new File( cNombreCompleto ).isDirectory()) {
                 leerDirRecursivo( cNombreCompleto + File.separator, lisFile );
-            else
+            } else
                 lisFile.add( fixUnixPath( getRutaRelativa( cNombreCompleto ) ) );
         }
         return lisFile;

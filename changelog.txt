@@ -2,6 +2,10 @@
  * Selección Rutas a sincronizar
  * Lista de extensiones a omitir
 
+= v4001c =
+@ 30/05/2019
+ * Se omite .git
+
 = v4001b =
 @ 11/05/2019
  * Se corrige comparación local para que compare correctamente las diferemcias

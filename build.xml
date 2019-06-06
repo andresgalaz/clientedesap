@@ -14,7 +14,7 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/hsqldb.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jackson-mapper-asl-1.9.9.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jackson-core-asl-1.9.9.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/utilFrmwk_4.0e.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/utilFrmwk_4.0h.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
         </jar>
     </target>

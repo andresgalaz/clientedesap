@@ -3,6 +3,9 @@
  * Lista de extensiones a omitir
 
 = v4001c =
+@ 08/01/2020
+ * Se cambio biblioteca Util y se agregó un mensaje para probar UTC.
+   Sin resultados
 @ 30/05/2019
  * Se omite .git
 

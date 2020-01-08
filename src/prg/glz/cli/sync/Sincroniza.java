@@ -375,6 +375,8 @@ public class Sincroniza {
                 } else {
                     if (isEqualCFuente( fLocal, formRemoto ))
                         dialogo.setRespuesta( DlgOpSync.DLG_SALTAR );
+                    else
+                        logger.debug( "Diferencias de horas nada mas" );
                 }
             }
 

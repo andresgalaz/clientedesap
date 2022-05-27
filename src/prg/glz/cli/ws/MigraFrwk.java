@@ -182,7 +182,7 @@ public class MigraFrwk extends AbstractFrwk {
         }
 
         try {
-            MultipartUtility mPart = new MultipartUtility( super.getUrlServer() + "/do/ssh", "UTF-8" );
+            MultipartUtility mPart = new MultipartUtility( super.getUrlServer() + "/do/formMigraUpfile", "UTF-8" );
             mPart.addHeaderField( "User-Agent", "Framework" );
             mPart.addFormField( "prm_idForm", formRemoto.getcIdForm() );
             mPart.addFormField( "prm_tpObjeto", formRemoto.getfTpObjeto() );
